@@ -94,19 +94,12 @@ namespace ERA_Assembler
 
 
         /// <summary>
-        /// match comments by checking for starting token, then advancing 
-        /// until closing token is matched
-        /// todo comments in assembler
+        /// substitute all comments to empty string
         /// </summary>
-        private bool MatchComments()
+        private void MatchComments(string input)
         { 
-            Regex regex = new Regex(@"^(\/\/[^\n]*\n)|^(\/\*(.|[\n])*?\*\/)");
-            Match match = regex.Match(_input);
-            if (!match.Success) return false;
-
-            string s = match.Value;
-
-            return true;
+            Regex regex = new Regex(@"^(\/\/[^\n]*\n)");
+            regex.Replace(input, "");
         }
 
 

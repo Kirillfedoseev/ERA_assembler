@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ERA_Assembler;
-namespace Tests
+
+namespace ERA_Tests
 {
     [TestClass]
     public class InterpretationTest
@@ -9,8 +10,10 @@ namespace Tests
         [TestMethod]
         public void TestMethod1()
         {
+            string expected = "D4 22 00 00";
+
             string result = Executer.Execute("R1 += R2;");
-            Assert.AreNotEqual(result,"D4 22 00 00");
+            Assert.AreEqual(expected, result);
 
         }
     }

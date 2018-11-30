@@ -6,13 +6,19 @@ using ERA_Assembler.Tokens;
 
 namespace ERA_Assembler
 {
-    class Program
+    public class Executer
     {
 
         static void Main(string[] args)
         {
             string code = File.ReadAllText("in.txt");
+            File.WriteAllText("out.txt", Execute(code));
+            //Console.WriteLine(MachineCodeToReadableFormat(new List<byte[]>() {new byte[4]{8, 10, 11, 12}}));
+            //Console.ReadLine();
+        }
 
+        public static string Execute(string code)
+        {
             //// strip windows line endings out
             code = code.Replace("\r", "");
 
@@ -21,9 +27,7 @@ namespace ERA_Assembler
 
             Translator translator = new Translator();
             List<byte[]> result = translator.TranslateTokens(tokens);
-
-            File.WriteAllText("out.txt", MachineCodeToReadableFormat(result));
-
+            return MachineCodeToReadableFormat(result);
         }
 
         private static string MachineCodeToReadableFormat(List<byte[]> bytesList)
@@ -35,7 +39,6 @@ namespace ERA_Assembler
                 string hex = BitConverter.ToString(bytes).Replace("-", " ");
                 sb.AppendLine(hex);
             }
-
 
             return sb.ToString();
         }

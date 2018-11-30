@@ -17,4 +17,8 @@
     <Folder Include="Output\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ERA_Assembler\ERA_Assembler.csproj" />
+  </ItemGroup>
+
 </Project>
