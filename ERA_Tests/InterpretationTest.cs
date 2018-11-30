@@ -8,7 +8,7 @@ namespace ERA_Tests
     {            
         //todo tests for commands interpretation
         [TestMethod]
-        public void TestMethod1()
+        public void AddCmdTest()
         {
             string expected = "D4 22 00 00";
 
