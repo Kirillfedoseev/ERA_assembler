@@ -113,7 +113,7 @@ namespace ERA_Assembler
         {
             //todo error system
             // output Error to the console and exit
-            Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
+            //Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
         }
 
     }

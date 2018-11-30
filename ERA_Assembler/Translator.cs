@@ -27,7 +27,7 @@ namespace ERA_Assembler
             List<byte[]> bytesList = new List<byte[]>(commands.Count);
             foreach (Command command in commands)
             {
-                bytesList.Add(command.GetML());
+                bytesList.Add(command.GetBytes());
             }
 
             return bytesList;

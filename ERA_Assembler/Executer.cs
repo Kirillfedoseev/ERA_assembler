@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using ERA_Assembler.Commands;
 using ERA_Assembler.Tokens;
 
 namespace ERA_Assembler
@@ -11,10 +12,10 @@ namespace ERA_Assembler
 
         static void Main(string[] args)
         {
-            string code = File.ReadAllText("in.txt");
-            File.WriteAllText("out.txt", Execute(code));
-            //Console.WriteLine(MachineCodeToReadableFormat(new List<byte[]>() {new byte[4]{8, 10, 11, 12}}));
-            //Console.ReadLine();
+            //string code = File.ReadAllText("in.txt");
+            //File.WriteAllText("out.txt", Execute(code));
+            Console.WriteLine(MachineCodeToReadableFormat(new List<byte[]>() {new AddCommand(1,2).GetBytes()}));
+            Console.ReadLine();
         }
 
         public static string Execute(string code)
