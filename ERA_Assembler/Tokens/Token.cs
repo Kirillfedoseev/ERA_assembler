@@ -4,7 +4,7 @@ namespace ERA_Assembler.Tokens
     /// <summary>
     /// Storage class for tokens
     /// </summary>
-    public abstract class Token
+    public class Token
     {
         public TokenType Type { get; set; }
 
