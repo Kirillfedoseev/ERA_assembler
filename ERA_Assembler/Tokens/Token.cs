@@ -14,7 +14,7 @@ namespace ERA_Assembler.Tokens
 
         public string Value { get; set; }
 
-        public Token(TokenType type, int line, int position,string value = "")
+        public Token(TokenType type, int line, int position, string value = "")
         {
             Type = type;
             Line = line;

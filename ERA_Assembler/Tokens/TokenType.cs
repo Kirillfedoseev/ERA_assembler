@@ -2,7 +2,18 @@
 {
     public enum TokenType
     {
-        End_of_input,
+        EndOfInput,
         Error,
+        Register,
+        Operator,
+        Semicolon,
+        Literal,
+        If,
+        Goto,
+        Trace,
+        Stop,
+        Nop,
+        Data,
+        Label
     }
 }
