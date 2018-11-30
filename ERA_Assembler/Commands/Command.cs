@@ -9,10 +9,24 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public abstract class Command
     {
-       
-        //todo Implement structure
-        private Token command;
 
+        protected int _register1;
+        protected int _register2;
+
+        protected readonly int CmdNum;
+        protected readonly int Format;
+
+
+        protected Command(byte register1, byte register2,int cmdNum, int format)
+        {
+            if (register1 >= 32) throw new Exception("Register 1 out of bound: " + register1);
+            if (register2 >= 32) throw new Exception("Register 2 out of bound: " + register2);
+
+            _register1 = register1;
+            _register2 = register2;
+            CmdNum = cmdNum;
+            Format = format;
+        }
 
         public abstract byte[] GetBytes();
 
@@ -20,27 +34,35 @@ namespace ERA_Assembler.Commands
 
     }
 
-    public class AddCommand : Command
+
+    /// <summary>
+    /// Command of type like
+    /// 00 0000 00000 00000 0..0
+    /// f  cmd   r1    r2    16
+    /// </summary>
+    public abstract class BinaryCommand : Command
     {
-        private int _register1;
-        private int _register2;
-
-        private const int cmd_num = 10;
-
-        public AddCommand(byte register1, byte register2)
-        {
-            if (register1 >= 32) throw new Exception("Register 1 out of bound: " + register1);
-            if (register2 >= 32) throw new Exception("Register 2 out of bound: " + register2);
-
-            _register1 = register1;
-            _register2 = register2;
-        }
+            
+        protected BinaryCommand(byte register1, byte register2, int cmdNum, int format) : base(register1, register2, cmdNum, format) {}
 
         public override byte[] GetBytes()
         {
-
-            int a = (3 << 29) + (cmd_num << 25) + (_register1 << 21) + (_register2 << 16);
+            int a = (Format << 29) + (CmdNum << 25) + (_register1 << 21) + (_register2 << 16);
             return BitConverter.GetBytes(a);
         }
+
     }
+
+    public class AddCommand : BinaryCommand
+    {
+        public AddCommand(byte register1, byte register2) : base(register1, register2, 10, 0) {}
+        
+    }
+
+
+    public class CopyCommand : BinaryCommand
+    {
+        public CopyCommand(byte register1, byte register2) : base(register1, register2, 1, 3) { }
+    }
+
 }
