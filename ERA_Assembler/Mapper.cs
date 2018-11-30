@@ -2,7 +2,8 @@
 using ERA_Assembler.Commands;
 
 namespace ERA_Assembler
-{
+{            
+    //todo mapped commands to memory
     class Mapper
     {
 
@@ -11,7 +12,7 @@ namespace ERA_Assembler
         //todo add parameters if needed
 
 
-        public void MapCommands(ref List<Command> commands)
+        public void MapCommands(ref List<Word> words)
         {
 
         }
