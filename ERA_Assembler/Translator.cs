@@ -12,8 +12,9 @@ namespace ERA_Assembler
 
         public List<Word> Words;
 
-       
-
+        public Mapper Mapper;
+      
+      
         /// <summary>
         /// Parse input token Stack to AST tree
         /// </summary>
@@ -23,16 +24,16 @@ namespace ERA_Assembler
         {
             Tokens = new Stack<Token>(tokens);
             Words = new List<Word>();
+            Mapper mapper = new Mapper();
+
             Parse();
 
-            Mapper mapper = new Mapper();
-            mapper.MapCommands(ref Words);
+            mapper.Map();
 
             List<byte[]> bytesList = new List<byte[]>(Words.Count);
-            foreach (Word word in Words)
-            {
+            foreach (Word word in Words)          
                 bytesList.Add(word.GetBytes());
-            }
+            
 
             return bytesList;
         }
@@ -45,6 +46,8 @@ namespace ERA_Assembler
                 LabelParse();
 
                 GoToParse();
+
+                StopParse();
 
                 SimpleOperations();
 
@@ -64,11 +67,15 @@ namespace ERA_Assembler
 
         }
 
+
         private void LabelParse()
         {
             if (Tokens.Peek().Type == TokenType.Label)
-                Words.Add(new Label(Tokens.Pop().Value, Words.Count));
-            //todo add to map
+            {
+                Label label = new Label(Tokens.Pop().Value, Words.Count);
+                Words.Add(label);
+                Mapper.Labels.Add(label.Name,label);
+            }
         }
 
 
@@ -101,6 +108,45 @@ namespace ERA_Assembler
 
             Tokens.Push(t4);
             Tokens.Push(t3);
+            Tokens.Push(t2);
+            Tokens.Push(t1);
+        }
+
+
+        private void StopParse()
+        {
+            bool isSuccess = false;
+            Token t1 = Tokens.Pop();
+            Token t2 = Tokens.Pop();
+
+            switch (t2.Type)
+            {
+                case TokenType.Semicolon when t1.Type == TokenType.Stop:
+                {
+                    Command cmd = new StopCommand();
+                    Words.Add(cmd);
+                    isSuccess = true;
+                    break;
+                }
+                case TokenType.Literal when t1.Type == TokenType.Stop:
+                {
+                    if (Tokens.Peek().Type != TokenType.Semicolon) Error("No semicolon in operation", t2);
+                    else
+                    {
+                        Tokens.Pop();
+                        int value = Convert.ToInt32(t2.Value);
+                        Command cmd = new StopCommand(value);
+                        Words.Add(cmd);
+                        isSuccess = true;
+                    }
+                    break;
+                }
+            }
+                    
+
+
+            if (isSuccess) return;
+
             Tokens.Push(t2);
             Tokens.Push(t1);
         }
@@ -253,18 +299,6 @@ namespace ERA_Assembler
         }
 
 
-        private void LabelAssign()
-        {
-            //todo
-        }
-
-
-        private void ConstantAssign()
-        {
-            //todo
-        }
-
-
         private void OperationSumWithConstant()
         {
             bool isSuccess = false;
@@ -308,6 +342,82 @@ namespace ERA_Assembler
         }
 
 
+        private void LabelAssign()
+        {
+            bool isSuccess = false;
+            Token t1 = Tokens.Pop();
+            Token t2 = Tokens.Pop();
+            Token t3 = Tokens.Pop();
+
+            if (t1.Type == TokenType.Register &&
+                t2.Type == TokenType.Operator &&
+                t2.Value == ":=" &&
+                t3.Type == TokenType.Label)
+            {
+                if (Tokens.Peek().Type != TokenType.Semicolon) Error("No semicolon in operation", t3);
+                else
+                {
+                    Tokens.Pop();
+
+                    byte r1 = Convert.ToByte(t1.Value);
+                    byte r2 = Convert.ToByte(30); // by idea in that register we store address of global data
+                    BinaryCommand cmd = new AddNextConstCommand(r1,r2);
+                    Words.Add(cmd);
+
+                    Label label = Mapper.Labels.Contains(t3.Value) ? (Label)Mapper.Labels[t3.Value] : null;
+                    LabelAddress address = new LabelAddress(label);
+                    if (label == null)
+                    {
+                        Mapper.Unreferenced.Add(new KeyValuePair<string, LabelAddress>(t3.Value, address));
+                    }
+                    Words.Add(address);
+
+                    isSuccess = true;
+                }
+            }
+
+            if (isSuccess) return;
+
+            Tokens.Push(t3);
+            Tokens.Push(t2);
+            Tokens.Push(t1);
+        }
+
+
+        private void ConstantAssign()
+        {
+            bool isSuccess = false;
+            Token t1 = Tokens.Pop();
+            Token t2 = Tokens.Pop();
+            Token t3 = Tokens.Pop();
+
+
+            if (t1.Type == TokenType.Register &&
+                t2.Type == TokenType.Operator &&
+                t2.Value == ":=" &&
+                t3.Type == TokenType.Literal)
+            {
+                if (Tokens.Peek().Type != TokenType.Semicolon) Error("No semicolon in operation", t3);
+                else
+                {
+                    Tokens.Pop();
+                    byte r1 = Convert.ToByte(t1.Value);
+                    byte r2 = Convert.ToByte(t3.Value);
+                    BinaryCommand cmd = new AddNextConstCommand(r1, r2);
+                    Words.Add(cmd);
+                    isSuccess = true;
+                }
+            }
+
+
+            if (isSuccess) return;
+
+            Tokens.Push(t3);
+            Tokens.Push(t2);
+            Tokens.Push(t1);
+        }
+     
+     
         /// <summary>
         /// Err
         /// </summary>

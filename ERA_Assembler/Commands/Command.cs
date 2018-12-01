@@ -16,10 +16,27 @@ namespace ERA_Assembler.Commands
     public class Constant:Word
     {
         protected int Value;
-        public Constant(int value) => Value = value;
+        public Constant(int value = 0) => Value = value;
 
         public override byte[] GetBytes() => BitConverter.GetBytes(Value);
     }
+
+
+    /// <summary>
+    /// Label Address as Constant
+    /// 0..0
+    ///  32
+    /// </summary>
+    public class LabelAddress : Word
+    {
+        protected Label RefLabel;
+        public LabelAddress(Label label) => RefLabel = label;
+
+        public void SetLabel(Label label) => RefLabel = label;
+
+        public override byte[] GetBytes() => RefLabel.GetBytes();
+    }
+
 
     /// <summary>
     /// Label of type
@@ -116,7 +133,7 @@ namespace ERA_Assembler.Commands
     {
         protected int Value;
 
-        public StopCommand(int value) : base(0, 1)
+        public StopCommand(int value = 0) : base(0, 1)
         {
             if(Value >= 1024 || Value < 0) throw new Exception("Stop constant overflow: " + value);
             Value = value;
