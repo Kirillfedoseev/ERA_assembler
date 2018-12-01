@@ -307,6 +307,24 @@ namespace ERA_Assembler
         }
 
 
+        /// <summary>
+        /// Adds string token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutStringToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            Regex regex = new Regex("[a-z][A-Z]+");
+            var match = regex.Match(sourceCode);
+            if (match.Success)
+            {
+                tokens.Add(new Token(TokenType.String, lineN, lastTokenEnd + 1, match.Value));
+            }
+        }
+
+
         public List<Token> GetTokens(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
@@ -325,6 +343,7 @@ namespace ERA_Assembler
                     PutLiteralToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutReservedWordToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutLabelToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    PutStringToken(lineN, lastTokenEnd, sourceCode, tokens);
                     newTokensN = tokens.Count - newTokensN;
                     if (newTokensN > 0)
                     {
