@@ -241,6 +241,53 @@ namespace ERA_Assembler
         }
 
 
+        /// <summary>
+        /// Adds punctuation token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutReservedWordToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            var reservedWordsNames = new string[]
+            {
+                "if",
+                "goto",
+                "STOP",
+                "NOP",
+                "DATA"
+            };
+            foreach (string reservedWordName in reservedWordsNames)
+            {
+                Regex regex = new Regex("^" + Regex.Escape(reservedWordName));
+                var match = regex.Match(sourceCode);
+                if (match.Success)
+                {
+                    switch (match.Value)
+                    {
+                        case "if":
+                            tokens.Add(new Token(TokenType.If, lineN, lastTokenEnd + 1));
+                            break;
+                        case "goto":
+                            tokens.Add(new Token(TokenType.Goto, lineN, lastTokenEnd + 1));
+                            break;
+                        case "STOP":
+                            tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1));
+                            break;
+                        case "NOP":
+                            tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1));
+                            break;
+                        case "DATA":
+                            tokens.Add(new Token(TokenType.Data, lineN, lastTokenEnd + 1));
+                            break;
+                    }
+                    return;
+                }
+            }
+        }
+
+
         public List<Token> GetTokens(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
@@ -257,6 +304,7 @@ namespace ERA_Assembler
                     PutOperatorToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutPunctuationToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutLiteralToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    PutReservedWordToken(lineN, lastTokenEnd, sourceCode, tokens);
                     newTokensN = tokens.Count - newTokensN;
                     if (newTokensN > 0)
                     {
