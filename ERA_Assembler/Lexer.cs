@@ -297,7 +297,7 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutLabelToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("< *[a-z][A-Z]+ *>");
+            Regex regex = new Regex("^< *[a-z][A-Z]+ *>");
             Regex valueRegex = new Regex("[a-z][A-Z]+");
             var match = regex.Match(sourceCode);
             if (match.Success)
@@ -316,7 +316,7 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutStringToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("[a-z][A-Z]+");
+            Regex regex = new Regex("^[a-z][A-Z]+");
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
