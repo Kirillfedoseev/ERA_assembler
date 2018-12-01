@@ -185,7 +185,40 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + 1, match.Value.Substring(1)));
+                tokens.Add(new Token(TokenType.Register, lineN, lastTokenEnd + 1, match.Value.Substring(1)));
+            }
+        }
+
+
+        /// <summary>
+        /// Adds punctuation token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutPunctuationToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            var puntuationNames = new string[]
+            {
+                ",", ";"
+            };
+            foreach (string punctuationName in puntuationNames)
+            {
+                Regex regex = new Regex("^" + Regex.Escape(punctuationName));
+                var match = regex.Match(sourceCode);
+                if (match.Success)
+                {
+                    switch (match.Value) {
+                        case ",":
+                            tokens.Add(new Token(TokenType.Comma, lineN, lastTokenEnd + 1));
+                            break;
+                        case ";":
+                            tokens.Add(new Token(TokenType.Semicolon, lineN, lastTokenEnd + 1));
+                            break;
+                    }
+                    return;
+                }
             }
         }
 

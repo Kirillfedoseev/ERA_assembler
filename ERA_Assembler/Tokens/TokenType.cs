@@ -10,13 +10,12 @@
         Literal,
         If,
         Goto,
-        Trace,
         Stop,
-        Nop,
         Data,
         Label,
         Spaces,
         Comment,
-        String
+        String,
+        Comma
     }
 }
