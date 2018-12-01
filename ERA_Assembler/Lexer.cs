@@ -223,6 +223,24 @@ namespace ERA_Assembler
         }
 
 
+        /// <summary>
+        /// Adds literal token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutLiteralToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            Regex regex = new Regex("^\\d+");
+            var match = regex.Match(sourceCode);
+            if (match.Success)
+            {
+                tokens.Add(new Token(TokenType.Literal, lineN, lastTokenEnd + 1, match.Value));
+            }
+        }
+
+
         public List<Token> GetTokens(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
@@ -237,13 +255,14 @@ namespace ERA_Assembler
                 {
                     PutSpacesToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutOperatorToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    PutPunctuationToken(lineN, lastTokenEnd, sourceCode, tokens);
                     newTokensN = tokens.Count - newTokensN;
                     if (newTokensN > 0)
                     {
                         Token lastToken = tokens[tokens.Count - 1];
                         lastTokenEnd += lastToken.Value.Length - 1;
                         lastTokenPosition = lastToken.Position;
-                        line = line.Substring(lastTokenPosition);
+                        line = line.Substring(lastTokenEnd);
                     }
                     else if (line.Length > 0)
                     {
