@@ -256,6 +256,7 @@ namespace ERA_Assembler
                     PutSpacesToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutOperatorToken(lineN, lastTokenEnd, sourceCode, tokens);
                     PutPunctuationToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    PutLiteralToken(lineN, lastTokenEnd, sourceCode, tokens);
                     newTokensN = tokens.Count - newTokensN;
                     if (newTokensN > 0)
                     {
