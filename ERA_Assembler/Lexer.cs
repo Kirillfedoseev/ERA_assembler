@@ -116,5 +116,94 @@ namespace ERA_Assembler
             //Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
         }
 
+        /// <summary>
+        /// Adds operator token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutOperatorToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            var operatorsNames = new string[]
+            {
+                "+=",
+                "-=",
+                "&=",
+                "*=",
+                "|=",
+                "^=",
+                "?=",
+                "+",
+                "-",
+                "&",
+                "*",
+                "|",
+                "^",
+                "?",
+            };
+            foreach (string operatorName in operatorsNames)
+            {
+                Regex regex = new Regex("^" + Regex.Escape(operatorName));
+                var match = regex.Match(sourceCode);
+                if (match.Success)
+                {
+                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1));
+                    return;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds spaces token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutSpacesToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            Regex regex = new Regex("^ *");
+            var match = regex.Match(sourceCode);
+            if (match.Success)
+            {
+                tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + 1));
+            }
+        }
+
+
+        public List<Token> GetTokens(string sourceCode)
+        {
+            List<Token> tokens = new List<Token>();
+            string[] lines = sourceCode.Split('\n');
+            for (int lineN = 1; lineN <= lines.Length; lineN++)
+            {
+                var line = lines[lineN];
+                int newTokensN = 0;
+                int lastTokenPosition = 1;
+                int lastTokenEnd = lastTokenPosition;
+                while (line.Length > 0)
+                {
+                    PutSpacesToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    PutOperatorToken(lineN, lastTokenEnd, sourceCode, tokens);
+                    newTokensN = tokens.Count - newTokensN;
+                    if (newTokensN > 0)
+                    {
+                        Token lastToken = tokens[tokens.Count - 1];
+                        lastTokenEnd += lastToken.Value.Length - 1;
+                        lastTokenPosition = lastToken.Position;
+                        line = line.Substring(lastTokenPosition);
+                    }
+                    else if (line.Length > 0)
+                    {
+                        tokens.Add(new Token(TokenType.Error, lineN, lastTokenPosition));
+                        //todo remove spaces and comments
+                        return tokens;
+                    }
+                }
+            }
+            //todo remove spaces and comments
+            return tokens;
+        }
     }
 }

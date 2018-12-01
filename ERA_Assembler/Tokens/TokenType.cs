@@ -14,6 +14,9 @@
         Stop,
         Nop,
         Data,
-        Label
+        Label,
+        Spaces,
+        Comment,
+        String
     }
 }
