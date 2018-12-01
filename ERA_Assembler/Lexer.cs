@@ -148,7 +148,7 @@ namespace ERA_Assembler
                 var match = regex.Match(sourceCode);
                 if (match.Success)
                 {
-                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1));
+                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1, match.Value));
                     return;
                 }
             }
@@ -163,11 +163,29 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutSpacesToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("^ *");
+            Regex regex = new Regex("^ +");
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
                 tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + 1));
+            }
+        }
+
+
+        /// <summary>
+        /// Adds register token from the beginning of the code if finds one
+        /// </summary>
+        /// <param name="lineN"></param> number of the line
+        /// <param name="lastTokenEnd"></param> end index of the last token 
+        /// <param name="sourceCode"></param> the line of the source code to search in
+        /// <param name="tokens"></param> list of token to add operator token to
+        private void PutRegisterToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
+        {
+            Regex regex = new Regex("^R\\d+");
+            var match = regex.Match(sourceCode);
+            if (match.Success)
+            {
+                tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + 1, match.Value.Substring(1)));
             }
         }
 
