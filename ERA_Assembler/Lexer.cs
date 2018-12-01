@@ -343,6 +343,28 @@ namespace ERA_Assembler
         }
 
 
+        /// <summary>
+        /// Removes unnecessary tokens like comments and spaces from tokens list
+        /// </summary>
+        /// <param name="tokens"></param> list of tokes to remove from
+        private void RemoveUnnecessaryTokens(List<Token> tokens)
+        {
+            HashSet<TokenType> unnecessaryTokens = new HashSet<TokenType>
+            {
+                TokenType.Comment,
+                TokenType.Spaces
+            };
+
+            for (int tokenIndex = 0; tokenIndex < tokens.Count; tokenIndex++)
+            {
+                if (unnecessaryTokens.Contains(tokens[tokenIndex].Type))
+                {
+                    tokens.RemoveAt(tokenIndex);
+                }
+            }
+        }
+
+
         public List<Token> GetTokens(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
@@ -374,12 +396,12 @@ namespace ERA_Assembler
                     else if (line.Length > 0)
                     {
                         tokens.Add(new Token(TokenType.Error, lineN, lastTokenPosition));
-                        //todo remove spaces and comments
+                        RemoveUnnecessaryTokens(tokens);
                         return tokens;
                     }
                 }
             }
-            //todo remove spaces and comments
+            RemoveUnnecessaryTokens(tokens);
             return tokens;
         }
     }
