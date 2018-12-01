@@ -37,10 +37,10 @@ namespace ERA_Assembler
             code = code.Replace("\r", "");
 
             Lexer lexer = new Lexer();
-            List<Token[]> tokens = lexer.Scan(code);
+            List<Token> tokens = lexer.Scan(code);
 
             Translator translator = new Translator();
-            List<byte[]> result = translator.TranslateTokens(null);//todo replcae null
+            List<byte[]> result = translator.TranslateTokens(tokens);
             return MachineCodeToReadableFormat(result);
         }
 
