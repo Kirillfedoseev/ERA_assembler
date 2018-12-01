@@ -14,7 +14,20 @@ namespace ERA_Assembler
         {
             //string code = File.ReadAllText("in.txt");
             //File.WriteAllText("out.txt", Execute(code));
-            Console.WriteLine(MachineCodeToReadableFormat(new List<byte[]>() {new AddCommand(1,2).GetBytes()}));
+
+            List<Token> tokens = new List<Token>();
+            tokens.Add(new Token(TokenType.Register,0,0,"1"));
+            tokens.Add(new Token(TokenType.Operator, 0, 1, "+="));
+            tokens.Add(new Token(TokenType.Register, 0, 4, "2"));
+            tokens.Add(new Token(TokenType.Semicolon, 0, 5));
+            tokens.Add(new Token(TokenType.EndOfInput, 1, 1));
+
+            Translator translator = new Translator();
+            List<byte[]> result = translator.TranslateTokens(tokens);
+
+
+
+            Console.WriteLine(MachineCodeToReadableFormat(result));
             Console.ReadLine();
         }
 
@@ -27,7 +40,7 @@ namespace ERA_Assembler
             List<Token[]> tokens = lexer.Scan(code);
 
             Translator translator = new Translator();
-            List<byte[]> result = translator.TranslateTokens(tokens);
+            List<byte[]> result = translator.TranslateTokens(null);//todo replcae null
             return MachineCodeToReadableFormat(result);
         }
 

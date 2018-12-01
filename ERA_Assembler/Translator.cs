@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ERA_Assembler.Commands;
 using ERA_Assembler.Tokens;
 
@@ -22,7 +23,8 @@ namespace ERA_Assembler
         /// <returns></returns>
         public List<byte[]> TranslateTokens(List<Token> tokens)
         {
-            Tokens = new Stack<Token>(tokens);
+            Tokens = new Stack<Token>(((IEnumerable<Token>)tokens).Reverse());
+
             Words = new List<Word>();
             Mapper mapper = new Mapper();
 
@@ -32,15 +34,16 @@ namespace ERA_Assembler
 
             List<byte[]> bytesList = new List<byte[]>(Words.Count);
             foreach (Word word in Words)          
-                bytesList.Add(word.GetBytes());
+                bytesList.Add(word.GetBytes().Reverse().ToArray());
             
 
             return bytesList;
         }
 
+
         private void Parse()
         {
-            while (Tokens.Count > 0)
+            while (Tokens.Count > 0 && Tokens.Peek().Type != TokenType.EndOfInput)
             {
                 int size = Tokens.Count;
                 LabelParse();
@@ -61,15 +64,19 @@ namespace ERA_Assembler
 
                 ConstantAssign();
 
-                if (size == Tokens.Count) Error("Something wrong: ", Tokens.Pop());
+                DataParse();
 
+                if (size == Tokens.Count) Error("Something goes wrong: ", Tokens.Pop());
             }
 
         }
 
-
+       
         private void LabelParse()
         {
+            if (Tokens.Count < 1) return;
+
+
             if (Tokens.Peek().Type == TokenType.Label)
             {
                 Label label = new Label(Tokens.Pop().Value, Words.Count);
@@ -81,6 +88,9 @@ namespace ERA_Assembler
 
         private void GoToParse()
         {
+            if (Tokens.Count < 4) return;
+
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -115,6 +125,8 @@ namespace ERA_Assembler
 
         private void StopParse()
         {
+            if (Tokens.Count < 2) return;
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -154,6 +166,8 @@ namespace ERA_Assembler
 
         private void SimpleOperations()
         {
+            if (Tokens.Count < 3) return;
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -226,6 +240,7 @@ namespace ERA_Assembler
 
         private void OperationsWithLeftPointer()
         {
+            if(Tokens.Count < 4) return;
 
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
@@ -264,6 +279,7 @@ namespace ERA_Assembler
 
         private void OperationsWithRightPointer()
         {
+            if (Tokens.Count < 4) return;
 
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
@@ -301,6 +317,9 @@ namespace ERA_Assembler
 
         private void OperationSumWithConstant()
         {
+            if (Tokens.Count < 5) return;
+
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -344,6 +363,9 @@ namespace ERA_Assembler
 
         private void LabelAssign()
         {
+            if (Tokens.Count < 3) return;
+
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -386,6 +408,9 @@ namespace ERA_Assembler
 
         private void ConstantAssign()
         {
+            if (Tokens.Count < 3) return;
+
+
             bool isSuccess = false;
             Token t1 = Tokens.Pop();
             Token t2 = Tokens.Pop();
@@ -416,16 +441,62 @@ namespace ERA_Assembler
             Tokens.Push(t2);
             Tokens.Push(t1);
         }
-     
-     
+
+
+        private void DataParse()
+        {
+            if (Tokens.Count < 3) return;
+
+
+            bool isSuccess = false;
+            Token t1 = Tokens.Pop();
+            Token t2 = Tokens.Pop();
+            Token t3 = Tokens.Pop();
+
+            if (t1.Type == TokenType.Data &&
+                t2.Type == TokenType.Literal)
+            {
+                while (true)
+                {
+                    if (t2.Type != TokenType.Literal || t3.Type != TokenType.Common && t3.Type != TokenType.Semicolon)
+                    {
+                        Error("Data format exception: ", t3);
+                        break;
+                    }
+
+                    int value = Convert.ToInt32(t2.Value);
+                    Command cmd = new StopCommand(value);
+                    Words.Add(cmd);
+
+                    if (t3.Type == TokenType.Semicolon)
+                    {
+                        isSuccess = true;
+                        break;
+                    }
+
+                    if (Tokens.Count < 2) break;
+                    t2 = Tokens.Pop();
+                    t3 = Tokens.Pop();
+                } 
+
+            }
+            
+
+            if (isSuccess) return;
+
+            Tokens.Push(t3);
+            Tokens.Push(t2);
+            Tokens.Push(t1);
+        }
+
         /// <summary>
-        /// Err
+        /// Error
         /// </summary>
         /// <param name="msg"></param>
-        /// <param name="tokenType">Token type</param>
+        /// <param name="token">Token</param>
         private void Error(string msg, Token token)
         {      
-            //todo error(Type.Line, Type.Position, "%tokenType: Expecting '%tokenType', found '%tokenType'\n", msg, atr[tokenType].Value, atr[Type.Type].Value);
+            throw new Exception(msg + "\n"  + token);
         }
     }
 }

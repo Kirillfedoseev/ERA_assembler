@@ -116,7 +116,7 @@ namespace ERA_Assembler.Commands
 
         public override byte[] GetBytes()
         {
-            int a = (Format << 29) + (CmdNum << 25) + (Register1 << 21) + (Register2 << 16);
+            int a = (Format << 29) + (CmdNum << 25) + (Register1 << 20) + (Register2 << 15);
             return BitConverter.GetBytes(a);
         }
 
@@ -141,7 +141,7 @@ namespace ERA_Assembler.Commands
 
         public override byte[] GetBytes()
         {
-            int a = (Format << 29) + (CmdNum << 25) + (Value << 16);
+            int a = (Format << 29) + (CmdNum << 25) + (Value << 15);
             return BitConverter.GetBytes(a);
         }
     }
@@ -162,7 +162,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class AddNextConstCommand : BinaryCommand
     {
-        public AddNextConstCommand(byte register1, byte register2) : base(register1, register2, 2, 3) { }
+        public AddNextConstCommand(byte register1, byte register2) : base(register1, register2, 2, 0) { }
     }
 
     /// <summary>
