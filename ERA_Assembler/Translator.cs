@@ -24,6 +24,7 @@ namespace ERA_Assembler
         /// <returns></returns>
         public List<byte[]> TranslateTokens(List<Token> tokens)
         {
+            if(tokens == null) return new List<byte[]>();
             Tokens = new Stack<Token>(((IEnumerable<Token>)tokens).Reverse());
 
             Program = new List<Word>();
