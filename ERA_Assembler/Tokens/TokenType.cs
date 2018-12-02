@@ -15,6 +15,7 @@
         Nop,
         Data,
         Label,
-        Common
+        Common,
+        String
     }
 }

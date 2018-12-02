@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using ERA_Assembler.Commands;
 
 namespace ERA_Assembler
@@ -9,8 +10,9 @@ namespace ERA_Assembler
     public class Mapper
     {
 
-        public const int MemoryOffset = 0x001;
-        public const int CodeOffset = 0x00ff;
+        private int MemoryLenght;
+
+        private int CodeOffset;
 
         public Hashtable Labels;
 
@@ -23,10 +25,32 @@ namespace ERA_Assembler
         }
 
 
-        public void Map()
+        public List<byte[]> Map(ref List<Word> program, ref List<Word> data)
         {
+            MemoryLenght = data.Count * 2;
+            CodeOffset = MemoryLenght + 4;
+
             ResolveUnreferenced();
             ResolveLabelsAddresses();
+
+            List<byte[]> bytesList = new List<byte[]>(1 + program.Count + data.Count);
+
+
+            List<byte> header = new List<byte>();
+            header.Add(0);//bersion
+            header.Add(0);//padding
+            header.AddRange(BitConverter.GetBytes(MemoryLenght).Reverse()); //data length
+
+            bytesList.Add(header.ToArray());
+
+            foreach (Word word in data)
+                bytesList.Add(word.GetBytes());
+
+            foreach (Word word in program)
+                bytesList.Add(word.GetBytes());
+
+            return bytesList;
+
         }
 
         private void ResolveLabelsAddresses()
@@ -48,4 +72,6 @@ namespace ERA_Assembler
         }
 
     }
+
+     
 }

@@ -11,7 +11,8 @@ namespace ERA_Assembler
 
         public Stack<Token> Tokens;
 
-        public List<Word> Words;
+        public List<Word> Data;
+        public List<Word> Program;
 
         public Mapper Mapper;
       
@@ -25,19 +26,13 @@ namespace ERA_Assembler
         {
             Tokens = new Stack<Token>(((IEnumerable<Token>)tokens).Reverse());
 
-            Words = new List<Word>();
-            Mapper mapper = new Mapper();
+            Program = new List<Word>();
+            Data = new List<Word>();
+            Mapper = new Mapper();
 
             Parse();
-
-            mapper.Map();
-
-            List<byte[]> bytesList = new List<byte[]>(Words.Count);
-            foreach (Word word in Words)          
-                bytesList.Add(word.GetBytes().Reverse().ToArray());
-            
-
-            return bytesList;
+                         
+            return Mapper.Map(ref Program, ref Data); ;
         }
 
 
@@ -79,8 +74,7 @@ namespace ERA_Assembler
 
             if (Tokens.Peek().Type == TokenType.Label)
             {
-                Label label = new Label(Tokens.Pop().Value, Words.Count);
-                Words.Add(label);
+                Label label = new Label(Tokens.Pop().Value, Program.Count - 1);
                 Mapper.Labels.Add(label.Name,label);
             }
         }
@@ -109,7 +103,7 @@ namespace ERA_Assembler
                     byte r1 = Convert.ToByte(t2.Value);
                     byte r2 = Convert.ToByte(t4.Value);
                     BinaryCommand cmd = new GotoCommand(r1, r2);
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     isSuccess = true;
                 }
             }
@@ -136,7 +130,7 @@ namespace ERA_Assembler
                 case TokenType.Semicolon when t1.Type == TokenType.Stop:
                 {
                     Command cmd = new StopCommand();
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     isSuccess = true;
                     break;
                 }
@@ -148,7 +142,7 @@ namespace ERA_Assembler
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
                         Command cmd = new StopCommand(value);
-                        Words.Add(cmd);
+                        Program.Add(cmd);
                         isSuccess = true;
                     }
                     break;
@@ -224,7 +218,7 @@ namespace ERA_Assembler
 
                     if (cmd != null)
                     {
-                        Words.Add(cmd);
+                        Program.Add(cmd);
                         isSuccess = true;
                     }
                 }
@@ -263,7 +257,7 @@ namespace ERA_Assembler
                     byte r1 = Convert.ToByte(t2.Value);
                     byte r2 = Convert.ToByte(t4.Value);
                     BinaryCommand cmd = new CopyRegisterToMemoryCommand(r1, r2);
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     isSuccess = true;
                 }
             }
@@ -300,7 +294,7 @@ namespace ERA_Assembler
                     byte r1 = Convert.ToByte(t1.Value);
                     byte r2 = Convert.ToByte(t4.Value);
                     BinaryCommand cmd = new LoadFromMemoryCommand(r1, r2);
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     isSuccess = true;
                 }
             }
@@ -342,10 +336,10 @@ namespace ERA_Assembler
                     byte r1 = Convert.ToByte(t1.Value);
                     byte r2 = Convert.ToByte(t3.Value);
                     BinaryCommand cmd = new AddNextConstCommand(r1, r2);
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     int c = Convert.ToInt32(t5.Value);
                     Constant word = new Constant(c);
-                    Words.Add(word);
+                    Program.Add(word);
                     isSuccess = true;
                 }
             }
@@ -374,7 +368,7 @@ namespace ERA_Assembler
             if (t1.Type == TokenType.Register &&
                 t2.Type == TokenType.Operator &&
                 t2.Value == ":=" &&
-                t3.Type == TokenType.Label)
+                t3.Type == TokenType.String)
             {
                 if (Tokens.Peek().Type != TokenType.Semicolon) Error("No semicolon in operation", t3);
                 else
@@ -382,9 +376,10 @@ namespace ERA_Assembler
                     Tokens.Pop();
 
                     byte r1 = Convert.ToByte(t1.Value);
-                    byte r2 = Convert.ToByte(30); // by idea in that register we store address of global data
-                    BinaryCommand cmd = new AddNextConstCommand(r1,r2);
-                    Words.Add(cmd);
+                    BinaryCommand prevCmd = new AssignConstCommand(0,r1);
+                    Program.Add(prevCmd);
+                    BinaryCommand cmd = new AddNextConstCommand(r1,r1);
+                    Program.Add(cmd);
 
                     Label label = Mapper.Labels.Contains(t3.Value) ? (Label)Mapper.Labels[t3.Value] : null;
                     LabelAddress address = new LabelAddress(label);
@@ -392,7 +387,7 @@ namespace ERA_Assembler
                     {
                         Mapper.Unreferenced.Add(new KeyValuePair<string, LabelAddress>(t3.Value, address));
                     }
-                    Words.Add(address);
+                    Program.Add(address);
 
                     isSuccess = true;
                 }
@@ -429,7 +424,7 @@ namespace ERA_Assembler
                     byte r1 = Convert.ToByte(t1.Value);
                     byte r2 = Convert.ToByte(t3.Value);
                     BinaryCommand cmd = new AddNextConstCommand(r1, r2);
-                    Words.Add(cmd);
+                    Program.Add(cmd);
                     isSuccess = true;
                 }
             }
@@ -465,8 +460,8 @@ namespace ERA_Assembler
                     }
 
                     int value = Convert.ToInt32(t2.Value);
-                    Command cmd = new StopCommand(value);
-                    Words.Add(cmd);
+                    Word constant = new Constant(value);
+                    Data.Add(constant);
 
                     if (t3.Type == TokenType.Semicolon)
                     {
@@ -478,7 +473,6 @@ namespace ERA_Assembler
                     t2 = Tokens.Pop();
                     t3 = Tokens.Pop();
                 } 
-
             }
             
 
