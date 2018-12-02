@@ -1,11 +1,41 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ERA_Assembler;
+using ERA_Assembler.Tokens;
 
 namespace ERA_Tests
 {
     [TestClass]
     public class LexerTests
-    {            
+    {
+
+        public string Execute(string input)
+        {
+            Lexer lexer = new Lexer();
+            List<Token> tokens = lexer.Scan(input);
+            StringBuilder sb = new StringBuilder();
+            foreach (Token token in tokens)
+            {
+                sb.AppendLine(token.ToString());
+            }
+
+            return sb.ToString();
+        }
+
+
+        public void AreEqual(string expected, string actual)
+        {
+            Console.WriteLine(actual);
+            expected = expected.Replace(" ", "").Replace("\n", "");
+            actual = actual.Replace(" ", "").Replace("\n", "");
+
+            Assert.AreEqual(expected, actual);
+        }
+
+
+
         //todo tests for commands lexer
         [TestMethod]
         public void AddCmdTest()
@@ -16,8 +46,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 += R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 += R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -30,8 +60,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 := R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 := R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -44,8 +74,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 -= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 -= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -58,8 +88,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 >>= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 >>= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -72,8 +102,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 <<= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 <<= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -86,8 +116,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 |= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 |= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -100,8 +130,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 &= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 &= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -114,8 +144,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 ^= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 ^= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -128,8 +158,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 <= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 <= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -142,8 +172,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 >= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 >= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -156,8 +186,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("R1 ?= R2;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("R1 ?= R2;");
+            AreEqual(expected, result);
 
         }
 
@@ -171,8 +201,8 @@ namespace ERA_Tests
                                 "Semicolon 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("if R12 goto R14;");
-            Assert.AreEqual(expected, result);
+            string result = Execute("if R12 goto R14;");
+            AreEqual(expected, result);
 
         }
 
@@ -182,8 +212,8 @@ namespace ERA_Tests
             string expected = "Stop 0\n" +
                                 "End_of_input 1";
 
-            string result = Executer.Execute("stop");
-            Assert.AreEqual(expected, result);
+            string result = Execute("stop");
+            AreEqual(expected, result);
 
         }
 
@@ -191,21 +221,11 @@ namespace ERA_Tests
         public void NopTest()
         {
             string expected = "Nop 0\n" +
-                                "End_of_input 1";
+                              "Semicolon 0\n" +
+                              "End_of_input 1";
 
-            string result = Executer.Execute("skip");
-            Assert.AreEqual(expected, result);
-
-        }
-
-        [TestMethod]
-        public void NopTest()
-        {
-            string expected = "Nop 0\n" +
-                                "End_of_input 1";
-
-            string result = Executer.Execute("skip");
-            Assert.AreEqual(expected, result);
+            string result = Execute("nop;");
+            AreEqual(expected, result);
 
         }
 
@@ -227,10 +247,10 @@ namespace ERA_Tests
                                 "Semicolon 2\n" +
                                 "End_of_input 3";
 
-            string result = Executer.Execute("R0 := 2;\n" +
+            string result = Execute("R0 := 2;\n" +
                                                 "R0 += R31;\n" +
                                                  "*R0 := R1;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -262,12 +282,12 @@ namespace ERA_Tests
                                 "Semicolon 4\n" +
                                 "End_of_input 5";
 
-            string result = Executer.Execute("R0 := 2;\n" +
+            string result = Execute("R0 := 2;\n" +
                                                 "R0 += R31;\n" + 
                                                 "*R31 = R31;\n" +  
                                                 "*R0 := R0;\n" + 
                                                 "if R0 goto R0;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -315,7 +335,7 @@ namespace ERA_Tests
                                 "Semicolon 9\n" +
                                 "End_of_input 10";
 
-            string result = Executer.Execute("R1 := 1;\n" + 
+            string result = Execute("R1 := 1;\n" + 
                                                 "<LoopOuter>\n" +
                                                 "R3 := Size;\n" +
                                                 "R3 := *R3;\n" +
@@ -325,7 +345,7 @@ namespace ERA_Tests
                                                 "R4 &= R3;\n" +
                                                 "R3 := OutOuter;\n" +
                                                 "if R4 goto R3;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
             
 
         }
@@ -357,17 +377,18 @@ namespace ERA_Tests
                                 "Semiicolon 5\n"+
                                 "End_of_input 6";
 
-            string result = Executer.Execute("<OutOuter>\n" +
+            string result = Execute("<OutOuter>\n" +
                                                 "R15 := Size;\n" +
                                                 "R15 := *R15;\n" +
                                                 "R16 := Array;\n" +
                                                 "TRACE R15,R16;\n" +
                                                 "STOP; NOP;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
+
         [TestMethod]
-        public void Test()
+        public void Test5()
         {
             string expected = "Label 0 Size\n" +
                                 "Data 1\n" +
@@ -417,12 +438,12 @@ namespace ERA_Tests
                                 "Comma 4\n" +
                                 "End_of_input 5";
 
-            string result = Executer.Execute("<Size>\n" +
+            string result = Execute("<Size>\n" +
                                                 "DATA 20\n" +
                                                 "<Array>\n" +
                                                 "DATA 537, 242, 114, 436, 337, 296, 285, 655, 639, 436\n" +
                                                 "DATA 912, 520, 624, 551, 600, 741, 612, 943, 871, 735");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
     }

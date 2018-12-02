@@ -47,7 +47,7 @@ namespace ERA_Assembler
         /// where r1 and r2 are registers
         /// </summary>
         /// <param name="input">assembly code</param>
-        public List<Token[]> Scan(string input)
+        public List<Token> Scan(string input)
         {
             //todo formatted code
             //todo tokenize all strings
@@ -113,7 +113,7 @@ namespace ERA_Assembler
         {
             //todo error system
             // output Error to the console and exit
-            Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
+            //Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
         }
 
     }
