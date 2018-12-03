@@ -254,6 +254,7 @@ namespace ERA_Assembler
             {
                 "if",
                 "goto",
+                "format",
                 "STOP",
                 "NOP",
                 "DATA"
@@ -272,11 +273,14 @@ namespace ERA_Assembler
                         case "goto":
                             tokens.Add(new Token(TokenType.Goto, lineN, lastTokenEnd + 1));
                             break;
+                        case "format":
+                            tokens.Add(new Token(TokenType.Format, lineN, lastTokenEnd + 1));
+                            break;
                         case "STOP":
                             tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1));
                             break;
                         case "NOP":
-                            tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.Nop, lineN, lastTokenEnd + 1));
                             break;
                         case "DATA":
                             tokens.Add(new Token(TokenType.Data, lineN, lastTokenEnd + 1));

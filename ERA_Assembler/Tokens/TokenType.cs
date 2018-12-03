@@ -11,11 +11,13 @@
         If,
         Goto,
         Stop,
+        Nop,
         Data,
         Label,
         Spaces,
         Comment,
         String,
-        Comma
+        Comma,
+        Format
     }
 }
