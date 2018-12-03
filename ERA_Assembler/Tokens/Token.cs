@@ -24,8 +24,7 @@ namespace ERA_Assembler.Tokens
 
         public override string ToString()
         {
-            //todo make representation of tokens
-            return $"{Line,-5}  {Position,-5}   {Type.ToString(),-14}     {Value}";
+            return $"{Type.ToString(),-14} {Line,-5} {Value}";
         }
     }
 }
