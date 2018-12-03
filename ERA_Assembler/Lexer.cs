@@ -373,7 +373,8 @@ namespace ERA_Assembler
         {
             List<Token> tokens = new List<Token>();
             string[] lines = sourceCode.Split('\n');
-            for (int lineN = 1; lineN <= lines.Length; lineN++)
+            int lineN = 1;
+            for (lineN = 1; lineN <= lines.Length; lineN++)
             {
                 var line = lines[lineN];
                 int newTokensN = 0;
@@ -406,6 +407,7 @@ namespace ERA_Assembler
                 }
             }
             RemoveUnnecessaryTokens(tokens);
+            tokens.Add(new Token(TokenType.EndOfInput, lineN+1, 1));
             return tokens;
         }
     }
