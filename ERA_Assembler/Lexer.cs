@@ -40,22 +40,6 @@ namespace ERA_Assembler
         
         #endregion 
 
-        /// <summary>
-        /// Scanning input code and create massive of tokens
-        /// where each Token[] is line of 3 or two parts: command, param1, param2, for example
-        /// add r1, r2
-        /// where r1 and r2 are registers
-        /// </summary>
-        /// <param name="input">assembly code</param>
-        public List<Token> Scan(string input)
-        {
-            //todo formatted code
-            //todo tokenize all strings
-            //todo return error if problems
-            //todo return List<Token[]> where Token[] is exact one part of input assembler code delimited by ';'
-            return null;
-        }
-
 
         /// <summary>
         /// match string numbers
@@ -369,7 +353,11 @@ namespace ERA_Assembler
         }
 
 
-        public List<Token> GetTokens(string sourceCode)
+        /// <summary>
+        /// Scanning input code and create massive of tokens
+        /// </summary>
+        /// <param name="sourceCode">assembly code</param>
+        public List<Token> Scan(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
             string[] lines = sourceCode.Split('\n');
