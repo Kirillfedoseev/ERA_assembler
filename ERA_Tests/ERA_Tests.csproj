@@ -51,7 +51,6 @@
   <ItemGroup>
     <Compile Include="InterpretationTest.cs" />
     <Compile Include="LexerTests.cs" />
-    <Compile Include="MappingTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

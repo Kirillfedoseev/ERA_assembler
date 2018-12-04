@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ERA_Assembler.Commands;
 using ERA_Assembler.Tokens;
+using ERA_Assembler.Words;
 
 namespace ERA_Assembler
 {
@@ -12,6 +12,7 @@ namespace ERA_Assembler
         public Stack<Token> Tokens;
 
         public List<Word> Data;
+
         public List<Word> Program;
 
         public Mapper Mapper;
@@ -42,6 +43,7 @@ namespace ERA_Assembler
             while (Tokens.Count > 0 && Tokens.Peek().Type != TokenType.EndOfInput)
             {
                 int size = Tokens.Count;
+
                 LabelParse();
 
                 GoToParse();
@@ -132,7 +134,7 @@ namespace ERA_Assembler
             {
                 case TokenType.Semicolon when t1.Type == TokenType.Stop:
                 {
-                    Command cmd = new StopCommand();
+                        Words.Commands cmd = new StopCommand();
                     Program.Add(cmd);
                     isSuccess = true;
                     break;
@@ -144,7 +146,7 @@ namespace ERA_Assembler
                     {
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
-                        Command cmd = new StopCommand(value);
+                            Words.Commands cmd = new StopCommand(value);
                         Program.Add(cmd);
                         isSuccess = true;
                     }
@@ -152,7 +154,7 @@ namespace ERA_Assembler
                 }
                 case TokenType.Semicolon when t1.Type == TokenType.Nop:
                 {
-                    Command cmd = new SkipCommand();
+                        Words.Commands cmd = new SkipCommand();
                     Program.Add(cmd);
                     isSuccess = true;
                     break;
@@ -164,7 +166,7 @@ namespace ERA_Assembler
                     {
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
-                        Command cmd = new SkipCommand(value);
+                            Words.Commands cmd = new SkipCommand(value);
                         Program.Add(cmd);
                         isSuccess = true;
                     }
@@ -205,37 +207,37 @@ namespace ERA_Assembler
                     switch (t2.Value)
                     {
                         case ":=":
-                            cmd = new CopyRegisterToRegisterCommand(r1, r2, Formate.Int32);
+                            cmd = new CopyRegisterToRegisterCommand(r1, r2, Format.Int32);
                             break;
                         case "-=":
-                            cmd = new SubCommand(r1, r2, Formate.Int32);
+                            cmd = new SubCommand(r1, r2, Format.Int32);
                             break;
                         case "+=":
-                            cmd = new AddCommand(r1, r2, Formate.Int32);
+                            cmd = new AddCommand(r1, r2, Format.Int32);
                             break;
                         case "?=":
-                            cmd = new ArithmeticCompareCommand(r1, r2, Formate.Int32);
+                            cmd = new ArithmeticCompareCommand(r1, r2, Format.Int32);
                             break;
                         case "|=":
-                            cmd = new LogicOrCommand(r1, r2, Formate.Int32);
+                            cmd = new LogicOrCommand(r1, r2, Format.Int32);
                             break;
                         case "&=":
-                            cmd = new LogicAndCommand(r1, r2, Formate.Int32);
+                            cmd = new LogicAndCommand(r1, r2, Format.Int32);
                             break;
                         case "^=":
-                            cmd = new LogicXorCommand(r1, r2, Formate.Int32);
+                            cmd = new LogicXorCommand(r1, r2, Format.Int32);
                             break;
                         case "<<=":
-                            cmd = new ArithmeticLeftShiftCommand(r1, r2, Formate.Int32);
+                            cmd = new ArithmeticLeftShiftCommand(r1, r2, Format.Int32);
                             break;
                         case ">>=":
-                            cmd = new ArithmeticRightShiftCommand(r1, r2, Formate.Int32);
+                            cmd = new ArithmeticRightShiftCommand(r1, r2, Format.Int32);
                             break;
                         case ">=":
-                            cmd = new LogicRightShiftCommand(r1, r2, Formate.Int32);
+                            cmd = new LogicRightShiftCommand(r1, r2, Format.Int32);
                             break;
                         case "<=":
-                            cmd = new LogicLeftShiftCommand(r1, r2, Formate.Int32);
+                            cmd = new LogicLeftShiftCommand(r1, r2, Format.Int32);
                             break;
                     }
 
@@ -505,6 +507,7 @@ namespace ERA_Assembler
             Tokens.Push(t2);
             Tokens.Push(t1);
         }
+
 
         /// <summary>
         /// Error

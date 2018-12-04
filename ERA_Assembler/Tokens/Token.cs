@@ -16,6 +16,7 @@ namespace ERA_Assembler.Tokens
 
         public string Lexeme { get; set; }
 
+
         public Token(TokenType type, int line, int position, string value = "", string lexeme = null)
         {
             Type = type;
@@ -24,6 +25,7 @@ namespace ERA_Assembler.Tokens
             Value = value;
             Lexeme = lexeme;
         }
+
 
         public override string ToString()
         {

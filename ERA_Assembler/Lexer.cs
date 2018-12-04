@@ -10,22 +10,65 @@ namespace ERA_Assembler
     /// Lexer for ERA Assembler
     /// </summary>
     public class Lexer
-    {
-
-
+    {  
 
         /// <summary>
-        /// Outputs Error message to the console and exits 
+        /// Scanning input code and create massive of tokens
         /// </summary>
-        /// <param name="message">Error message to display to user</param>
-        /// <param name="line">Line Error occurred on</param>
-        /// <param name="position">Line column that the Error occurred at</param>
-        private void Error(string message, int line, int position)
+        /// <param name="sourceCode">assembly code</param>
+        public List<Token> Scan(string sourceCode)
         {
-            //todo error system
-            // output Error to the console and exit
-            //Tokens.Add(new []{new Token(TokenType.Error, line, position - 1, message)});
+            List<Token> tokens = new List<Token>();
+            string[] lines = sourceCode.Replace("\r","").Replace("\t","").Split('\n');
+            int lineN;
+            int deltaTokensN = 0;
+            int oldTokensN = 0;
+            for (lineN = 0; lineN < lines.Length; lineN++)
+            {
+                var line = lines[lineN];
+                int lastTokenPosition = 1;
+                int lastTokenEnd = lastTokenPosition;
+                List<Action> list = new List<Action>
+                {
+                    () => PutSpacesToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutLabelToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutOperatorToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutPunctuationToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutLiteralToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutRegisterToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutReservedWordToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutStringToken(lineN, lastTokenEnd, line, tokens),
+                    () => PutCommentToken(lineN, lastTokenEnd, line, tokens)
+                };
+                while (line.Length > 0)
+                {
+                    foreach (Action a in list)
+                    {
+                        a.Invoke();
+                        deltaTokensN = tokens.Count - oldTokensN;
+                        oldTokensN = tokens.Count;
+
+                        if (deltaTokensN <= 0) continue;
+
+                        Token lastToken = tokens[tokens.Count - 1];
+                        lastTokenPosition = lastToken.Position;
+                        line = line.Substring(lastToken.Lexeme.Length);
+                        break;
+                    }
+
+                    if (deltaTokensN != 0 || line.Length <= 0) continue;
+
+                    tokens.Add(new Token(TokenType.Error, lineN, lastTokenPosition));
+                    RemoveUnnecessaryTokens(tokens);
+                    return tokens;
+                }
+            }
+            RemoveUnnecessaryTokens(tokens);
+            tokens.Add(new Token(TokenType.EndOfInput, lineN, 1));
+            return tokens;
         }
+
+
 
         /// <summary>
         /// Adds operator token from the beginning of the code if finds one
@@ -63,11 +106,9 @@ namespace ERA_Assembler
             {
                 Regex regex = new Regex("^" + Regex.Escape(operatorName));
                 var match = regex.Match(sourceCode);
-                if (match.Success)
-                {
-                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1, match.Value, match.Value));
-                    return;
-                }
+                if (!match.Success) continue;
+                tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1, match.Value, match.Value));
+                return;
             }
         }
 
@@ -116,17 +157,18 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutPunctuationToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            var puntuationNames = new string[]
+            var punctuationNames = new string[]
             {
                 ",", ";"
             };
-            foreach (string punctuationName in puntuationNames)
+            foreach (string punctuationName in punctuationNames)
             {
                 Regex regex = new Regex("^" + Regex.Escape(punctuationName));
                 var match = regex.Match(sourceCode);
                 if (match.Success)
                 {
-                    switch (match.Value) {
+                    switch (match.Value)
+                    {
                         case ",":
                             tokens.Add(new Token(TokenType.Comma, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
@@ -259,7 +301,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode, match.Value));
+                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode, sourceCode));
             }
         }
 
@@ -278,66 +320,12 @@ namespace ERA_Assembler
 
             for (int tokenIndex = 0; tokenIndex < tokens.Count; tokenIndex++)
             {
-                if (unnecessaryTokens.Contains(tokens[tokenIndex].Type))
-                {
-                    tokens.RemoveAt(tokenIndex);
-                }
+                if (!unnecessaryTokens.Contains(tokens[tokenIndex].Type)) continue;
+
+                tokens.RemoveAt(tokenIndex);
+                tokenIndex--;
             }
         }
 
-
-        /// <summary>
-        /// Scanning input code and create massive of tokens
-        /// </summary>
-        /// <param name="sourceCode">assembly code</param>
-        public List<Token> Scan(string sourceCode)
-        {
-            List<Token> tokens = new List<Token>();
-            string[] lines = sourceCode.Replace("\r","").Replace("\t","").Split('\n');
-            int lineN;
-            int deltaTokensN = 0;
-            int oldTokensN = 0;
-            for (lineN = 0; lineN < lines.Length; lineN++)
-            {
-                var line = lines[lineN];
-                int lastTokenPosition = 1;
-                int lastTokenEnd = lastTokenPosition;
-                List<Action> list = new List<Action>();
-                list.Add(() => PutSpacesToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutLabelToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutOperatorToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutPunctuationToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutLiteralToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutRegisterToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutReservedWordToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutStringToken(lineN, lastTokenEnd, line, tokens));
-                list.Add(() => PutCommentToken(lineN, lastTokenEnd, line, tokens));
-                while (line.Length > 0)
-                {
-                    foreach (Action a in list)
-                    {
-                        a.Invoke();
-                        deltaTokensN = tokens.Count - oldTokensN;
-                        oldTokensN = tokens.Count;
-                        if (deltaTokensN > 0)
-                        {
-                            Token lastToken = tokens[tokens.Count - 1];
-                            lastTokenPosition = lastToken.Position;
-                            line = line.Substring(lastToken.Lexeme.Length);
-                            break;
-                        } 
-                    }
-                    if (deltaTokensN == 0 && line.Length > 0)
-                    {
-                        tokens.Add(new Token(TokenType.Error, lineN, lastTokenPosition));
-                        RemoveUnnecessaryTokens(tokens);
-                        return tokens;
-                    }
-                }
-            }
-            RemoveUnnecessaryTokens(tokens);
-            tokens.Add(new Token(TokenType.EndOfInput, lineN, 1));
-            return tokens;
-        }
     }
 }

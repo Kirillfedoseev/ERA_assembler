@@ -1,93 +1,8 @@
 ﻿using System;
-using System.Linq;
 
-namespace ERA_Assembler.Commands
+namespace ERA_Assembler.Words
 {
-    /// <summary>
-    /// Abstract class of memory unit
-    /// 0..0
-    ///  32
-    /// </summary>
-    public abstract class Word
-    {
-        public abstract byte[] GetBytes();
-    }
-  
-
-    /// <summary>
-    /// Constant of type
-    /// 0..0
-    ///  32
-    /// </summary>
-    public class Constant:Word
-    {
-        protected int Value;
-
-        public Constant(int value = 0) => Value = value;
-
-        public override byte[] GetBytes() => BitConverter.GetBytes(Value);
-    }
-
-
-    /// <summary>
-    /// Label Address as Constant
-    /// 0..0
-    ///  32
-    /// </summary>
-    public class LabelAddress : Word
-    {
-        protected Label RefLabel;
-
-        public LabelAddress(Label label) => RefLabel = label;
-
-        public void SetLabel(Label label) => RefLabel = label;
-
-        public override byte[] GetBytes() => RefLabel.GetBytes();
-    }
-
-
-    /// <summary>
-    /// Label of type
-    /// 0..0
-    ///  32
-    /// </summary>
-    public class Label : Word
-    {
-        public string Name;
-
-        protected int Address;
-
-        protected int CodeOffset;
-
-        public Label(string name, int address)
-        {
-            Name = name;
-            Address = address;
-        }
-
-        public void MapOnMemory(int codeOffset)
-        {
-            try
-            {
-                checked
-                {
-                    int a = codeOffset + Address;
-                }
-                CodeOffset = codeOffset;
-            }
-            catch (OverflowException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
-
-        public override byte[] GetBytes() => BitConverter.GetBytes(Address + CodeOffset);
-
-    }
-
-
-
+ 
     /// <summary>
     /// Any meaningful command
     /// </summary>
@@ -105,33 +20,7 @@ namespace ERA_Assembler.Commands
     }
 
 
-    /// <summary>
-    /// Command of type like
-    /// 00 0000 00000 00000 0..0
-    /// f  cmd   r1    r2    16
-    /// </summary>
-    public abstract class BinaryCommand : Command
-    {
-        protected int Register1;
-        protected int Register2;
-
-        protected BinaryCommand(byte register1, byte register2, int cmdNum, int format) : base(cmdNum, format)
-        {
-            if (register1 >= 32) throw new Exception("Register 1 out of bound: " + register1);
-            if (register2 >= 32) throw new Exception("Register 2 out of bound: " + register2);
-
-            Register1 = register1;
-            Register2 = register2;
-        }
-
-        public override byte[] GetBytes()
-        {
-            int a = (Format << 14) + (CmdNum << 10) + (Register1 << 5) + Register2;
-            a <<= 16;
-            return BitConverter.GetBytes(a);
-        }
-
-    }
+    #region single commands
 
     /// <summary>
     /// Command of type like
@@ -151,7 +40,6 @@ namespace ERA_Assembler.Commands
         public override byte[] GetBytes()
         {
             int a = (Format << 14) + (CmdNum << 10) + Value;
-            a <<= 16;
             return BitConverter.GetBytes(a);
         }
     }
@@ -176,6 +64,38 @@ namespace ERA_Assembler.Commands
     public class StopCommand : SingleCommand
     {
         public StopCommand(int value = 0) : base(0, 0, value) { }
+    }
+
+    #endregion
+
+
+    #region Binary commands
+
+    /// <summary>
+    /// Command of type like
+    /// 00 0000 00000 00000 0..0
+    /// f  cmd   r1    r2    16
+    /// </summary>
+    public abstract class BinaryCommand : Command
+    {
+        protected int Register1;
+        protected int Register2;
+
+        protected BinaryCommand(byte register1, byte register2, int cmdNum, int format) : base(cmdNum, format)
+        {
+            if (register1 >= 32) throw new Exception("Register 1 out of bound: " + register1);
+            if (register2 >= 32) throw new Exception("Register 2 out of bound: " + register2);
+
+            Register1 = register1;
+            Register2 = register2;
+        }
+
+        public override byte[] GetBytes()
+        {
+            int a = (Format << 14) + (CmdNum << 10) + (Register1 << 5) + Register2;
+            return BitConverter.GetBytes(a);
+        }
+
     }
 
 
@@ -227,7 +147,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class CopyRegisterToRegisterCommand : BinaryCommand
     {
-        public CopyRegisterToRegisterCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 4, (int)format) { }
+        public CopyRegisterToRegisterCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 4, (int)format) { }
     }
 
 
@@ -237,7 +157,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class AddCommand : BinaryCommand
     {
-        public AddCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 5, (int)format) { }
+        public AddCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 5, (int)format) { }
     }
 
 
@@ -247,7 +167,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class SubCommand : BinaryCommand
     {
-        public SubCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 6, (int)format) { }
+        public SubCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 6, (int)format) { }
     }
 
 
@@ -257,7 +177,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class ArithmeticRightShiftCommand : BinaryCommand
     {
-        public ArithmeticRightShiftCommand(byte register1, byte register2, Formate format = Formate.None) : base(register1, register2, 7, (int)format) { }
+        public ArithmeticRightShiftCommand(byte register1, byte register2, Format format = Words.Format.None) : base(register1, register2, 7, (int)format) { }
     }
 
 
@@ -267,7 +187,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class ArithmeticLeftShiftCommand : BinaryCommand
     {
-        public ArithmeticLeftShiftCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 8, (int)format) { }
+        public ArithmeticLeftShiftCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 8, (int)format) { }
     }
     
     
@@ -277,7 +197,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class LogicOrCommand : BinaryCommand
     {
-        public LogicOrCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 9, (int)format) { }
+        public LogicOrCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 9, (int)format) { }
     }
 
 
@@ -287,7 +207,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class LogicAndCommand : BinaryCommand
     {
-        public LogicAndCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 10, (int)format) { }
+        public LogicAndCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 10, (int)format) { }
     }
 
 
@@ -297,7 +217,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class LogicXorCommand : BinaryCommand
     {
-        public LogicXorCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 11, (int)format) { }
+        public LogicXorCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 11, (int)format) { }
     }
 
 
@@ -307,7 +227,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class LogicLeftShiftCommand : BinaryCommand
     {
-        public LogicLeftShiftCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 12, (int)format) { }
+        public LogicLeftShiftCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 12, (int)format) { }
     }
 
 
@@ -317,7 +237,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class LogicRightShiftCommand : BinaryCommand
     {
-        public LogicRightShiftCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 13, (int)format) { }
+        public LogicRightShiftCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 13, (int)format) { }
     }
 
 
@@ -327,7 +247,7 @@ namespace ERA_Assembler.Commands
     /// </summary>
     public class ArithmeticCompareCommand : BinaryCommand
     {
-        public ArithmeticCompareCommand(byte register1, byte register2, Formate format = Formate.Int32) : base(register1, register2, 14, (int)format) { }
+        public ArithmeticCompareCommand(byte register1, byte register2, Format format = Words.Format.Int32) : base(register1, register2, 14, (int)format) { }
     }
 
 
@@ -339,5 +259,7 @@ namespace ERA_Assembler.Commands
     {
         public GotoCommand(byte register1, byte register2) : base(register1, register2, 15, 3) { }
     }
+
+#endregion
 
 }

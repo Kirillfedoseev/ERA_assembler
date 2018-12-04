@@ -48,12 +48,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\Formate.cs" />
+    <Compile Include="Words\Format.cs" />
+    <Compile Include="Words\Words.cs" />
     <Compile Include="Lexer.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="Executer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Words\Commands.cs" />
     <Compile Include="Translator.cs" />
     <Compile Include="Tokens\Token.cs" />
     <Compile Include="Tokens\TokenType.cs" />

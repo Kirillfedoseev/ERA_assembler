@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using ERA_Assembler.Commands;
+using ERA_Assembler.Words;
 
 namespace ERA_Assembler
 {            
@@ -10,9 +10,9 @@ namespace ERA_Assembler
     public class Mapper
     {
 
-        private int MemoryLenght;
+        private int _memoryLength;
 
-        private int CodeOffset;
+        private int _codeOffset;
 
         public Hashtable Labels;
 
@@ -24,11 +24,16 @@ namespace ERA_Assembler
             Unreferenced = new List<KeyValuePair<string, LabelAddress>>();
         }
 
-
+        /// <summary>
+        /// Map labels with offset on memory
+        /// </summary>
+        /// <param name="program">words of program</param>
+        /// <param name="data">words of data</param>
+        /// <returns></returns>
         public List<byte[]> Map(ref List<Word> program, ref List<Word> data)
         {
-            MemoryLenght = data.Count * 2;
-            CodeOffset = MemoryLenght + 4;
+            _memoryLength = data.Count * 2;
+            _codeOffset = _memoryLength + 4;
 
             ResolveUnreferenced();
             ResolveLabelsAddresses();
@@ -37,9 +42,9 @@ namespace ERA_Assembler
 
 
             List<byte> header = new List<byte>();
-            header.Add(0);//bersion
+            header.Add(0);//version
             header.Add(0);//padding
-            header.AddRange(BitConverter.GetBytes(MemoryLenght).Reverse()); //data length
+            header.AddRange(BitConverter.GetBytes(_memoryLength).Reverse()); //data length
 
             bytesList.Add(header.ToArray().Reverse().ToArray());
 
@@ -56,7 +61,7 @@ namespace ERA_Assembler
         private void ResolveLabelsAddresses()
         {
             foreach (Label label in Labels.Values)           
-                label.MapOnMemory(CodeOffset);
+                label.MapOnMemory(_codeOffset);
             
         }
 

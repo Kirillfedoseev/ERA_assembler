@@ -11,15 +11,18 @@ namespace ERA_Assembler
 
         static void Main(string[] args)
         {
-            string code = File.ReadAllText("in.txt");
+            string code = File.ReadAllText("in.txt"); //input from doc
             File.WriteAllText("out.txt", Execute(code));
-            Console.ReadLine();
         }
 
+
+        /// <summary>
+        /// Compile ERA assembly code to machine code
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static string Execute(string code)
         {
-            //// strip windows line endings out
-            //code = code.Replace("\r", "");
 
             Lexer lexer = new Lexer();
             List<Token> tokens = lexer.Scan(code);
@@ -30,8 +33,11 @@ namespace ERA_Assembler
         }
 
 
-
-
+        /// <summary>
+        /// Reformat binary tupple to readable bytes list
+        /// </summary>
+        /// <param name="bytesList"></param>
+        /// <returns></returns>
         private static string MachineCodeToReadableFormat(List<byte[]> bytesList)
         {
             StringBuilder sb = new StringBuilder();
