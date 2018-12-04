@@ -118,6 +118,12 @@ namespace ERA_Assembler
                 "|=",
                 "^=",
                 "?=",
+                ":=",
+                "<<=",
+                ">>=",
+                "<=",
+                ">=",
+                "=",
                 "+",
                 "-",
                 "&",
@@ -132,7 +138,7 @@ namespace ERA_Assembler
                 var match = regex.Match(sourceCode);
                 if (match.Success)
                 {
-                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1, match.Value));
+                    tokens.Add(new Token(TokenType.Operator, lineN, lastTokenEnd + 1, match.Value, match.Value));
                     return;
                 }
             }
@@ -151,7 +157,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + 1));
+                tokens.Add(new Token(TokenType.Spaces, lineN, lastTokenEnd + match.Value.Length, match.Value, match.Value));
             }
         }
 
@@ -169,7 +175,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Register, lineN, lastTokenEnd + 1, match.Value.Substring(1)));
+                tokens.Add(new Token(TokenType.Register, lineN, lastTokenEnd + 1, match.Value.Substring(1), match.Value));
             }
         }
 
@@ -195,10 +201,10 @@ namespace ERA_Assembler
                 {
                     switch (match.Value) {
                         case ",":
-                            tokens.Add(new Token(TokenType.Comma, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.Comma, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
                         case ";":
-                            tokens.Add(new Token(TokenType.Semicolon, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.Semicolon, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
                     }
                     return;
@@ -220,7 +226,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Literal, lineN, lastTokenEnd + 1, match.Value));
+                tokens.Add(new Token(TokenType.Literal, lineN, lastTokenEnd + 1, match.Value, match.Value));
             }
         }
 
@@ -239,35 +245,35 @@ namespace ERA_Assembler
                 "if",
                 "goto",
                 "format",
-                "STOP",
-                "NOP",
-                "DATA"
+                "stop",
+                "nop",
+                "data"
             };
             foreach (string reservedWordName in reservedWordsNames)
             {
                 Regex regex = new Regex("^" + Regex.Escape(reservedWordName));
-                var match = regex.Match(sourceCode);
+                var match = regex.Match(sourceCode.ToLower());
                 if (match.Success)
                 {
                     switch (match.Value)
                     {
                         case "if":
-                            tokens.Add(new Token(TokenType.If, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.If, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
                         case "goto":
-                            tokens.Add(new Token(TokenType.Goto, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.Goto, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
                         case "format":
-                            tokens.Add(new Token(TokenType.Format, lineN, lastTokenEnd + 1));
+                            tokens.Add(new Token(TokenType.Format, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
-                        case "STOP":
-                            tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1));
+                        case "stop":
+                            tokens.Add(new Token(TokenType.Stop, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
-                        case "NOP":
-                            tokens.Add(new Token(TokenType.Nop, lineN, lastTokenEnd + 1));
+                        case "nop":
+                            tokens.Add(new Token(TokenType.Nop, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
-                        case "DATA":
-                            tokens.Add(new Token(TokenType.Data, lineN, lastTokenEnd + 1));
+                        case "data":
+                            tokens.Add(new Token(TokenType.Data, lineN, lastTokenEnd + 1, "", match.Value));
                             break;
                     }
                     return;
@@ -285,12 +291,12 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutLabelToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("^< *[a-z][A-Z]+ *>");
-            Regex valueRegex = new Regex("[a-z][A-Z]+");
+            Regex regex = new Regex("^< *[a-zA-Z]+ *>");
+            Regex valueRegex = new Regex("[a-zA-Z]+");
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Label, lineN, lastTokenEnd + 1, valueRegex.Match(match.Value).Value));
+                tokens.Add(new Token(TokenType.Label, lineN, lastTokenEnd + 1, valueRegex.Match(match.Value).Value, match.Value));
             }
         }
 
@@ -304,11 +310,11 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutStringToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("^[a-z][A-Z]+");
+            Regex regex = new Regex("^[a-zA-Z]+");
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.String, lineN, lastTokenEnd + 1, match.Value));
+                tokens.Add(new Token(TokenType.String, lineN, lastTokenEnd + 1, match.Value, match.Value));
             }
         }
 
@@ -326,7 +332,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode));
+                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode, match.Value));
             }
         }
 
@@ -362,29 +368,30 @@ namespace ERA_Assembler
             List<Token> tokens = new List<Token>();
             string[] lines = sourceCode.Split('\n');
             int lineN;
-            for (lineN = 0; lineN <= lines.Length; lineN++)
+            for (lineN = 0; lineN < lines.Length; lineN++)
             {
                 var line = lines[lineN];
-                int newTokensN = 0;
+                int deltaTokensN = 0;
+                int oldTokensN = 0;
                 int lastTokenPosition = 1;
                 int lastTokenEnd = lastTokenPosition;
                 while (line.Length > 0)
                 {
-                    PutSpacesToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutOperatorToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutPunctuationToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutLiteralToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutReservedWordToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutLabelToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutStringToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    PutCommentToken(lineN, lastTokenEnd, sourceCode, tokens);
-                    newTokensN = tokens.Count - newTokensN;
-                    if (newTokensN > 0)
+                    PutSpacesToken(lineN, lastTokenEnd, line, tokens);
+                    PutLabelToken(lineN, lastTokenEnd, line, tokens);
+                    PutOperatorToken(lineN, lastTokenEnd, line, tokens);
+                    PutPunctuationToken(lineN, lastTokenEnd, line, tokens);
+                    PutLiteralToken(lineN, lastTokenEnd, line, tokens);
+                    PutRegisterToken(lineN, lastTokenEnd, line, tokens);
+                    PutReservedWordToken(lineN, lastTokenEnd, line, tokens);
+                    //fixit PutStringToken(lineN, lastTokenEnd, line, tokens);
+                    PutCommentToken(lineN, lastTokenEnd, line, tokens);
+                    deltaTokensN = tokens.Count - oldTokensN;
+                    if (deltaTokensN > 0)
                     {
                         Token lastToken = tokens[tokens.Count - 1];
-                        lastTokenEnd += lastToken.Value.Length - 1;
                         lastTokenPosition = lastToken.Position;
-                        line = line.Substring(lastTokenEnd);
+                        line = line.Substring(lastToken.Lexeme.Length);
                     }
                     else if (line.Length > 0)
                     {
@@ -392,10 +399,11 @@ namespace ERA_Assembler
                         RemoveUnnecessaryTokens(tokens);
                         return tokens;
                     }
+                    oldTokensN = tokens.Count;
                 }
             }
             RemoveUnnecessaryTokens(tokens);
-            tokens.Add(new Token(TokenType.EndOfInput, lineN+1, 1));
+            tokens.Add(new Token(TokenType.EndOfInput, lineN, 1));
             return tokens;
         }
     }

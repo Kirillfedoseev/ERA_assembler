@@ -29,7 +29,7 @@ namespace ERA_Tests
         {
             Console.WriteLine(actual);
             expected = expected.Replace(" ", "").Replace("\n", "");
-            actual = actual.Replace(" ", "").Replace("\n", "");
+            actual = actual.Replace(" ", "").Replace("\n", "").Replace("\r", "");
 
             Assert.AreEqual(expected, actual);
         }
@@ -44,7 +44,7 @@ namespace ERA_Tests
                                 "Operator 0 +=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 += R2;");
             AreEqual(expected, result);
@@ -58,7 +58,7 @@ namespace ERA_Tests
                                 "Operator 0 :=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 := R2;");
             AreEqual(expected, result);
@@ -72,7 +72,7 @@ namespace ERA_Tests
                                 "Operator 0 -=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 -= R2;");
             AreEqual(expected, result);
@@ -86,7 +86,7 @@ namespace ERA_Tests
                                 "Operator 0 >>=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 >>= R2;");
             AreEqual(expected, result);
@@ -100,7 +100,7 @@ namespace ERA_Tests
                                 "Operator 0 <<=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 <<= R2;");
             AreEqual(expected, result);
@@ -114,7 +114,7 @@ namespace ERA_Tests
                                 "Operator 0 |=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 |= R2;");
             AreEqual(expected, result);
@@ -128,7 +128,7 @@ namespace ERA_Tests
                                 "Operator 0 &=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 &= R2;");
             AreEqual(expected, result);
@@ -142,7 +142,7 @@ namespace ERA_Tests
                                 "Operator 0 ^=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 ^= R2;");
             AreEqual(expected, result);
@@ -156,7 +156,7 @@ namespace ERA_Tests
                                 "Operator 0 <=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 <= R2;");
             AreEqual(expected, result);
@@ -170,7 +170,7 @@ namespace ERA_Tests
                                 "Operator 0 >=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 >= R2;");
             AreEqual(expected, result);
@@ -184,7 +184,7 @@ namespace ERA_Tests
                                 "Operator 0 ?=\n" +
                                 "Register 0 2\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("R1 ?= R2;");
             AreEqual(expected, result);
@@ -199,7 +199,7 @@ namespace ERA_Tests
                                 "Goto 0\n" +
                                 "Register 0 14\n" +
                                 "Semicolon 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("if R12 goto R14;");
             AreEqual(expected, result);
@@ -210,7 +210,7 @@ namespace ERA_Tests
         public void StopTest()
         {
             string expected = "Stop 0\n" +
-                                "End_of_input 1";
+                                "EndOfInput 1";
 
             string result = Execute("stop");
             AreEqual(expected, result);
@@ -222,7 +222,7 @@ namespace ERA_Tests
         {
             string expected = "Nop 0\n" +
                               "Semicolon 0\n" +
-                              "End_of_input 1";
+                              "EndOfInput 1";
 
             string result = Execute("nop;");
             AreEqual(expected, result);
@@ -245,7 +245,7 @@ namespace ERA_Tests
                                 "Operator 2 :=\n" +
                                 "Register 2 1\n" +
                                 "Semicolon 2\n" +
-                                "End_of_input 3";
+                                "EndOfInput 3";
 
             string result = Execute("R0 := 2;\n" +
                                                 "R0 += R31;\n" +
@@ -280,7 +280,7 @@ namespace ERA_Tests
                                 "Goto 4\n" +
                                 "Register 4 0\n" +
                                 "Semicolon 4\n" +
-                                "End_of_input 5";
+                                "EndOfInput 5";
 
             string result = Execute("R0 := 2;\n" +
                                                 "R0 += R31;\n" + 
@@ -333,7 +333,7 @@ namespace ERA_Tests
                                 "Goto 9\n" +
                                 "Register 9 3\n" +
                                 "Semicolon 9\n" +
-                                "End_of_input 10";
+                                "EndOfInput 10";
 
             string result = Execute("R1 := 1;\n" + 
                                                 "<LoopOuter>\n" +
@@ -375,7 +375,7 @@ namespace ERA_Tests
                                 "Semicolon 5\n" +
                                 "Nop 5\n" +
                                 "Semiicolon 5\n"+
-                                "End_of_input 6";
+                                "EndOfInput 6";
 
             string result = Execute("<OutOuter>\n" +
                                                 "R15 := Size;\n" +
@@ -436,7 +436,7 @@ namespace ERA_Tests
                                 "Comma 4\n" +
                                 "Label 4 735\n" +
                                 "Comma 4\n" +
-                                "End_of_input 5";
+                                "EndOfInput 5";
 
             string result = Execute("<Size>\n" +
                                                 "DATA 20\n" +

@@ -454,7 +454,7 @@ namespace ERA_Assembler
             {
                 while (true)
                 {
-                    if (t2.Type != TokenType.Literal || t3.Type != TokenType.Common && t3.Type != TokenType.Semicolon)
+                    if (t2.Type != TokenType.Literal || t3.Type != TokenType.Comma && t3.Type != TokenType.Semicolon)
                     {
                         Error("Data format exception: ", t3);
                         break;
