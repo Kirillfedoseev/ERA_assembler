@@ -134,7 +134,7 @@ namespace ERA_Assembler
             {
                 case TokenType.Semicolon when t1.Type == TokenType.Stop:
                 {
-                        Words.Commands cmd = new StopCommand();
+                    Command cmd = new StopCommand();
                     Program.Add(cmd);
                     isSuccess = true;
                     break;
@@ -146,7 +146,7 @@ namespace ERA_Assembler
                     {
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
-                            Words.Commands cmd = new StopCommand(value);
+                        Command cmd = new StopCommand(value);
                         Program.Add(cmd);
                         isSuccess = true;
                     }
@@ -154,7 +154,7 @@ namespace ERA_Assembler
                 }
                 case TokenType.Semicolon when t1.Type == TokenType.Nop:
                 {
-                        Words.Commands cmd = new SkipCommand();
+                    Command cmd = new SkipCommand();
                     Program.Add(cmd);
                     isSuccess = true;
                     break;
@@ -166,7 +166,7 @@ namespace ERA_Assembler
                     {
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
-                            Words.Commands cmd = new SkipCommand(value);
+                        Command cmd = new SkipCommand(value);
                         Program.Add(cmd);
                         isSuccess = true;
                     }
