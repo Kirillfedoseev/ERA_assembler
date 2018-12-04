@@ -1,3 +1,4 @@
+using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ERA_Assembler;
 
@@ -6,53 +7,60 @@ namespace ERA_Tests
     [TestClass]
     public class InterpretationTest
     {
+        public void AreEqual(string expected, string actual)
+        {
+            Console.WriteLine(actual);
+            expected = expected.Replace(" ", "").Replace("\n", "");
+            actual = actual.Replace(" ", "").Replace("\n", "").Replace("\r", "");
 
+            Assert.AreEqual(expected, actual);
+        }
 
         [TestMethod]
         public void LDATest()
         {
-            string expected = "08 2F 00 00 00 00 00 05";
+            string expected = "00 00 00 00 00 00 08 41 00 00 00 00 00 05 00 00 00 00";
 
             string result = Executer.Execute("R1 := R2 + 5;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
         }
 
         [TestMethod]
         public void LDCTest()
         {
-            string expected = "C8 25 00 00";
+            string expected = "00 00 00 00 00 00 C8 A1 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 := 5;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
         }
 
         [TestMethod]
         public void LDTest()
         {
-            string expected = "C4 22 00 00";
+            string expected = "00 00 00 00 00 00 C4 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 := *R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
         }
 
 
         [TestMethod]
         public void STTest()
         {
-            string expected = "CC 22 00 00";
+            string expected = "00 00 00 00 00 00 CC 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("*R1 := R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
         }
 
 
         [TestMethod]
         public void MOVTest()
         {
-            string expected = "D0 22 00 00";
+            string expected = "00 00 00 00 00 00 D0 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 := R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
             
         }
 
@@ -60,10 +68,10 @@ namespace ERA_Tests
         [TestMethod]
         public void AddTest()
         {
-            string expected = "D4 22 00 00";
+            string expected = "00 00 00 00 00 00 D4 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 += R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -71,20 +79,20 @@ namespace ERA_Tests
         [TestMethod]
         public void ASRest()
         {
-            string expected = "DC 22 00 00";
+            string expected = "00 00 00 00 00 00 DC 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 >>= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
         }
 
 
         [TestMethod]
         public void ASLTest()
         {
-            string expected = "E0 22 00 00";
+            string expected = "00 00 00 00 00 00 E0 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 <<= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -92,10 +100,10 @@ namespace ERA_Tests
         [TestMethod]
         public void ORTest()
         {
-            string expected = "E4 22 00 00";
+            string expected = "00 00 00 00 00 00 E4 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 |= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -103,10 +111,10 @@ namespace ERA_Tests
         [TestMethod]
         public void ANDTest()
         {
-            string expected = "E8 22 00 00";
+            string expected = "00 00 00 00 00 00 E8 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 &= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -114,10 +122,10 @@ namespace ERA_Tests
         [TestMethod]
         public void XORTest()
         {
-            string expected = "EC 22 00 00";
+            string expected = "00 00 00 00 00 00 EC 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 ^= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -125,10 +133,10 @@ namespace ERA_Tests
         [TestMethod]
         public void LSLTest()
         {
-            string expected = "F0 22 00 00";
+            string expected = "00 00 00 00 00 00 F0 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 <= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -136,10 +144,10 @@ namespace ERA_Tests
         [TestMethod]
         public void LSRTest()
         {
-            string expected = "F4 22 00 00";
+            string expected = "00 00 00 00 00 00 F4 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 >= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -147,10 +155,10 @@ namespace ERA_Tests
         [TestMethod]
         public void CNDTest()
         {
-            string expected = "F8 22 00 00";
+            string expected = "00 00 00 00 00 00 F8 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("R1 ?= R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -158,10 +166,10 @@ namespace ERA_Tests
         [TestMethod]
         public void CBRTest()
         {
-            string expected = "FC 22 00 00";
+            string expected = "00 00 00 00 00 00 FC 22 00 00 00 00 00 00";
 
             string result = Executer.Execute("if R1 goto R2;");
-            Assert.AreEqual(expected, result);
+            AreEqual(expected, result);
 
         }
 
@@ -169,10 +177,10 @@ namespace ERA_Tests
         [TestMethod]
         public void NOPTest()
         {
-            string expected = "40 00 00 00";
+            string expected = "00 00 00 00 00 00 40 00 00 00 00 00 00 00";
 
-            string result = Executer.Execute("skip");
-            Assert.AreEqual(expected, result);
+            string result = Executer.Execute("nop;");
+            AreEqual(expected, result);
 
         }
 
@@ -180,10 +188,10 @@ namespace ERA_Tests
         [TestMethod]
         public void STOPTest()
         {
-            string expected = "00 00 00 00";
+            string expected = "00 00 00 00 00 00 00 00 00 00 00 00 00 00";
 
-            string result = Executer.Execute("stop");
-            Assert.AreEqual(expected, result);
+            string result = Executer.Execute("stop;");
+            AreEqual(expected, result);
 
         }
     }

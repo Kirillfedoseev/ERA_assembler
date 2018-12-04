@@ -41,13 +41,13 @@ namespace ERA_Assembler
             header.Add(0);//padding
             header.AddRange(BitConverter.GetBytes(MemoryLenght).Reverse()); //data length
 
-            bytesList.Add(header.ToArray());
+            bytesList.Add(header.ToArray().Reverse().ToArray());
 
             foreach (Word word in data)
-                bytesList.Add(word.GetBytes());
+                bytesList.Add(word.GetBytes().Reverse().ToArray());
 
             foreach (Word word in program)
-                bytesList.Add(word.GetBytes());
+                bytesList.Add(word.GetBytes().Reverse().ToArray());
 
             return bytesList;
 

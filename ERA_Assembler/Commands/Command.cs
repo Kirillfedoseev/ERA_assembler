@@ -126,7 +126,8 @@ namespace ERA_Assembler.Commands
 
         public override byte[] GetBytes()
         {
-            int a = (Format << 29) + (CmdNum << 25) + (Register1 << 20) + (Register2 << 15);
+            int a = (Format << 14) + (CmdNum << 10) + (Register1 << 5) + Register2;
+            a <<= 16;
             return BitConverter.GetBytes(a);
         }
 
@@ -149,7 +150,8 @@ namespace ERA_Assembler.Commands
 
         public override byte[] GetBytes()
         {
-            int a = (Format << 29) + (CmdNum << 25) + (Value << 15);
+            int a = (Format << 14) + (CmdNum << 10) + Value;
+            a <<= 16;
             return BitConverter.GetBytes(a);
         }
     }

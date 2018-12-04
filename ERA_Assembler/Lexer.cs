@@ -11,81 +11,7 @@ namespace ERA_Assembler
     /// </summary>
     public class Lexer
     {
-        //todo need refactor
-        #region Constants and Constructors
-        // character classes 
-        //todo use if needed
 
-        private const string Letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_";
-
-        private const string Numbers = "0123456789";
-
-        private const string Identifier = Letters + Numbers;
-
-        private const string Whitespace = " \t\n\r";
-
-        // mappings from string keywords to token type 
-        private readonly Dictionary<string, TokenType> _keywordTokenTypeMap;
-
-        //todo use if needed
-        private int _line = 1;
-        private int _position = 1;
-        private string _input;
-
-        public Lexer()
-        {
-            _keywordTokenTypeMap = new Dictionary<string, TokenType>();
-        }
-
-        public List<Token[]> Tokens { get; } = new List<Token[]>();
-        
-        #endregion 
-
-
-        /// <summary>
-        /// match string numbers
-        /// todo use only regex
-        /// </summary>
-        private void MatchNumber()
-        {
-
-            Regex regex_float = new Regex("^[0-9]*[.][0-9]+");
-            Regex regex_int = new Regex("^[0-9][0-9]*");
-
-            Match match = regex_float.Match(_input);
-            string s = match.Value;
-            if (match.Success)
-            {
-            }
-
-
-        }
-
-
-        /// <summary>
-        /// match string literals
-        /// todo use only regex
-        /// </summary>
-        private void MatchCharacter()
-        {
-            Regex regex = new Regex("^\'[\\S|\\s]\'|^(\'\\\\n\')|^(\'\\\\\\\\\')");    
-            Match match = regex.Match(_input);
-            if (!match.Success) return;
-
-            string s = match.Value;
-            //Tokens.Add(new Token(TokenType.Char, _line, _position, s));
-            
-        }
-
-
-        /// <summary>
-        /// substitute all comments to empty string
-        /// </summary>
-        private void MatchComments(string input)
-        { 
-            Regex regex = new Regex(@"^(\/\/[^\n]*\n)");
-            regex.Replace(input, "");
-        }
 
 
         /// <summary>
@@ -329,7 +255,7 @@ namespace ERA_Assembler
         /// <param name="tokens"></param> list of token to add operator token to
         private void PutCommentToken(int lineN, int lastTokenEnd, string sourceCode, List<Token> tokens)
         {
-            Regex regex = new Regex("^\\/\\/");
+            Regex regex = new Regex("^\\/\\/[ a-zA-Z]*");
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
@@ -367,7 +293,7 @@ namespace ERA_Assembler
         public List<Token> Scan(string sourceCode)
         {
             List<Token> tokens = new List<Token>();
-            string[] lines = sourceCode.Split('\n');
+            string[] lines = sourceCode.Replace("\r","").Replace("\t","").Split('\n');
             int lineN;
             int deltaTokensN = 0;
             int oldTokensN = 0;

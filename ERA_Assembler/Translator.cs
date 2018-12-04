@@ -46,15 +46,15 @@ namespace ERA_Assembler
 
                 GoToParse();
 
-                StopParse();
-
-                SimpleOperations();
+                StopSkipParse();
 
                 OperationsWithLeftPointer();
 
                 OperationsWithRightPointer();
 
                 OperationSumWithConstant();
+
+                SimpleOperations();
 
                 LabelAssign();
 
@@ -65,6 +65,8 @@ namespace ERA_Assembler
                 if (size == Tokens.Count) Error("Something goes wrong: ", Tokens.Pop());
             }
 
+            if (Tokens.Pop().Type == TokenType.EndOfInput) Program.Add(new StopCommand());
+            else throw new Exception("No end of input file!");
         }
 
        
@@ -118,7 +120,7 @@ namespace ERA_Assembler
         }
 
 
-        private void StopParse()
+        private void StopSkipParse()
         {
             if (Tokens.Count < 2) return;
 
@@ -143,6 +145,26 @@ namespace ERA_Assembler
                         Tokens.Pop();
                         int value = Convert.ToInt32(t2.Value);
                         Command cmd = new StopCommand(value);
+                        Program.Add(cmd);
+                        isSuccess = true;
+                    }
+                    break;
+                }
+                case TokenType.Semicolon when t1.Type == TokenType.Nop:
+                {
+                    Command cmd = new SkipCommand();
+                    Program.Add(cmd);
+                    isSuccess = true;
+                    break;
+                }
+                case TokenType.Literal when t1.Type == TokenType.Nop:
+                {
+                    if (Tokens.Peek().Type != TokenType.Semicolon) Error("No semicolon in operation", t2);
+                    else
+                    {
+                        Tokens.Pop();
+                        int value = Convert.ToInt32(t2.Value);
+                        Command cmd = new SkipCommand(value);
                         Program.Add(cmd);
                         isSuccess = true;
                     }
@@ -334,8 +356,8 @@ namespace ERA_Assembler
                 else
                 {
                     Tokens.Pop();
-                    byte r1 = Convert.ToByte(t1.Value);
-                    byte r2 = Convert.ToByte(t3.Value);
+                    byte r2 = Convert.ToByte(t1.Value);
+                    byte r1 = Convert.ToByte(t3.Value);
                     BinaryCommand cmd = new AddNextConstCommand(r1, r2);
                     Program.Add(cmd);
                     int c = Convert.ToInt32(t5.Value);
@@ -422,9 +444,9 @@ namespace ERA_Assembler
                 else
                 {
                     Tokens.Pop();
-                    byte r1 = Convert.ToByte(t1.Value);
-                    byte r2 = Convert.ToByte(t3.Value);
-                    BinaryCommand cmd = new AddNextConstCommand(r1, r2);
+                    byte r2 = Convert.ToByte(t1.Value);
+                    byte r1 = Convert.ToByte(t3.Value);
+                    BinaryCommand cmd = new AssignConstCommand(r1, r2);
                     Program.Add(cmd);
                     isSuccess = true;
                 }
