@@ -333,7 +333,7 @@ namespace ERA_Assembler
             var match = regex.Match(sourceCode);
             if (match.Success)
             {
-                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode, match.Value));
+                tokens.Add(new Token(TokenType.Comment, lineN, lastTokenEnd + 1, sourceCode, sourceCode));
             }
         }
 
