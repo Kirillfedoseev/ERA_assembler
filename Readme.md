@@ -28,5 +28,8 @@ If you want to test the application, then run tests from VS, you do it by pushin
 Assembler code divide onto tokens, after it goes to translator, which convert it to commands, <br>
 after commands and labels data goes to mapper and labels are mapped onto memory addresses.
 
+## Dependency Diagram 
+![ ](DependenciesDiagram.png)
+
 ## Additional materials 
 All commands, examples of code and grammer you can find in that doc `Project_ERA.pdf`.
