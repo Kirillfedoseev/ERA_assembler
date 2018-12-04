@@ -2,11 +2,11 @@
 This project is The ERA assembler code hand-written compiler iplemented using C# and .Net Tests.
 
 ## Contributors
-Kirill Fedoseev - Tranlator and Mapper, Leading
-Elena Lebedeva - Lexer logic
-Valeria Ahmetzhanova - Lexer tests
-Victoria Rotaru - Translator tests
-Anastasia Kirdyasheva - Mapper tests
+Kirill Fedoseev - Tranlator and Mapper, Leading <br>
+Elena Lebedeva - Lexer logic <br>
+Valeria Ahmetzhanova - Lexer tests <br>
+Victoria Rotaru - Translator tests <br>
+Anastasia Kirdyasheva - Mapper tests <br>
 
 
 ## How to launch
