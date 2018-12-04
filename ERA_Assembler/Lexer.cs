@@ -1,4 +1,5 @@
 ﻿using ERA_Assembler.Tokens;
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -368,38 +369,44 @@ namespace ERA_Assembler
             List<Token> tokens = new List<Token>();
             string[] lines = sourceCode.Split('\n');
             int lineN;
+            int deltaTokensN = 0;
+            int oldTokensN = 0;
             for (lineN = 0; lineN < lines.Length; lineN++)
             {
                 var line = lines[lineN];
-                int deltaTokensN = 0;
-                int oldTokensN = 0;
                 int lastTokenPosition = 1;
                 int lastTokenEnd = lastTokenPosition;
+                List<Action> list = new List<Action>();
+                list.Add(() => PutSpacesToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutLabelToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutOperatorToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutPunctuationToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutLiteralToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutRegisterToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutReservedWordToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutStringToken(lineN, lastTokenEnd, line, tokens));
+                list.Add(() => PutCommentToken(lineN, lastTokenEnd, line, tokens));
                 while (line.Length > 0)
                 {
-                    PutSpacesToken(lineN, lastTokenEnd, line, tokens);
-                    PutLabelToken(lineN, lastTokenEnd, line, tokens);
-                    PutOperatorToken(lineN, lastTokenEnd, line, tokens);
-                    PutPunctuationToken(lineN, lastTokenEnd, line, tokens);
-                    PutLiteralToken(lineN, lastTokenEnd, line, tokens);
-                    PutRegisterToken(lineN, lastTokenEnd, line, tokens);
-                    PutReservedWordToken(lineN, lastTokenEnd, line, tokens);
-                    //fixit PutStringToken(lineN, lastTokenEnd, line, tokens);
-                    PutCommentToken(lineN, lastTokenEnd, line, tokens);
-                    deltaTokensN = tokens.Count - oldTokensN;
-                    if (deltaTokensN > 0)
+                    foreach (Action a in list)
                     {
-                        Token lastToken = tokens[tokens.Count - 1];
-                        lastTokenPosition = lastToken.Position;
-                        line = line.Substring(lastToken.Lexeme.Length);
+                        a.Invoke();
+                        deltaTokensN = tokens.Count - oldTokensN;
+                        oldTokensN = tokens.Count;
+                        if (deltaTokensN > 0)
+                        {
+                            Token lastToken = tokens[tokens.Count - 1];
+                            lastTokenPosition = lastToken.Position;
+                            line = line.Substring(lastToken.Lexeme.Length);
+                            break;
+                        } 
                     }
-                    else if (line.Length > 0)
+                    if (deltaTokensN == 0 && line.Length > 0)
                     {
                         tokens.Add(new Token(TokenType.Error, lineN, lastTokenPosition));
                         RemoveUnnecessaryTokens(tokens);
                         return tokens;
                     }
-                    oldTokensN = tokens.Count;
                 }
             }
             RemoveUnnecessaryTokens(tokens);

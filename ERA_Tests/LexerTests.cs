@@ -366,22 +366,16 @@ namespace ERA_Tests
                                 "Operator 3 :=\n" +
                                 "String 3 Array\n" +
                                 "Semicolon 3\n" +
-                                "Trace 4\n" +
-                                "Register 4 15\n" +
-                                "Comma 4\n" +
-                                "Register 4 16\n" +
+                                "Stop 4\n" +
                                 "Semicolon 4\n" +
-                                "Stop 5\n" +
-                                "Semicolon 5\n" +
-                                "Nop 5\n" +
-                                "Semiicolon 5\n"+
-                                "EndOfInput 6";
+                                "Nop 4\n" +
+                                "Semicolon 4\n"+
+                                "EndOfInput 5";
 
             string result = Execute("<OutOuter>\n" +
                                                 "R15 := Size;\n" +
                                                 "R15 := *R15;\n" +
                                                 "R16 := Array;\n" +
-                                                "TRACE R15,R16;\n" +
                                                 "STOP; NOP;");
             AreEqual(expected, result);
 
@@ -395,47 +389,45 @@ namespace ERA_Tests
                                 "Literal 1 20\n" +
                                 "Label 2 Array\n" +
                                 "Data 3\n" +
-                                "Label 3 537\n" +
+                                "Literal 3 537\n" +
                                 "Comma 3\n" +
-                                "Label 3 242\n" +
+                                "Literal 3 242\n" +
                                 "Comma 3\n" +
-                                "Label 3 114\n" +
+                                "Literal 3 114\n" +
                                 "Comma 3\n" +
-                                "Label 3 436\n" +
+                                "Literal 3 436\n" +
                                 "Comma 3\n" +
-                                "Label 3 337\n" +
+                                "Literal 3 337\n" +
                                 "Comma 3\n" +
-                                "Label 3 296\n" +
+                                "Literal 3 296\n" +
                                 "Comma 3\n" +
-                                "Label 3 285\n" +
+                                "Literal 3 285\n" +
                                 "Comma 3\n" +
-                                "Label 3 655\n" +
+                                "Literal 3 655\n" +
                                 "Comma 3\n" +
-                                "Label 3 639\n" +
+                                "Literal 3 639\n" +
                                 "Comma 3\n" +
-                                "Label 3 436\n" +
-                                "Comma 3\n" +
+                                "Literal 3 436\n" +
                                 "Data 4\n" +
-                                "Label 4 912\n" +
+                                "Literal 4 912\n" +
                                 "Comma 4\n" +
-                                "Label 4 520\n" +
+                                "Literal 4 520\n" +
                                 "Comma 4\n" +
-                                "Label 4 624\n" +
+                                "Literal 4 624\n" +
                                 "Comma 4\n" +
-                                "Label 4 551\n" +
+                                "Literal 4 551\n" +
                                 "Comma 4\n" +
-                                "Label 4 600\n" +
+                                "Literal 4 600\n" +
                                 "Comma 4\n" +
-                                "Label 4 741\n" +
+                                "Literal 4 741\n" +
                                 "Comma 4\n" +
-                                "Label 4 612\n" +
+                                "Literal 4 612\n" +
                                 "Comma 4\n" +
-                                "Label 4 943\n" +
+                                "Literal 4 943\n" +
                                 "Comma 4\n" +
-                                "Label 4 871\n" +
+                                "Literal 4 871\n" +
                                 "Comma 4\n" +
-                                "Label 4 735\n" +
-                                "Comma 4\n" +
+                                "Literal 4 735\n" +
                                 "EndOfInput 5";
 
             string result = Execute("<Size>\n" +
