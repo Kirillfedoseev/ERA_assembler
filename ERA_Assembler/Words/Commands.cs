@@ -24,8 +24,8 @@ namespace ERA_Assembler.Words
 
     /// <summary>
     /// Command of type like
-    /// 00 0000 0000000000 0..0
-    /// f  cmd    const     16
+    /// 0..0 00 0000 0000000000 
+    ///  16   f  cmd    const     
     /// </summary>
     public abstract class SingleCommand : Command
     {
@@ -73,8 +73,8 @@ namespace ERA_Assembler.Words
 
     /// <summary>
     /// Command of type like
-    /// 00 0000 00000 00000 0..0
-    /// f  cmd   r1    r2    16
+    /// 0..0  00 0000 00000 00000 
+    ///  16    f  cmd   r1    r2    
     /// </summary>
     public abstract class BinaryCommand : Command
     {
